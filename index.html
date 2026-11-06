@@ -5825,14 +5825,14 @@ live() {
     else if (G.kind === 'wheel') {
       const n = this.D.lmn.length; const i = Math.max(0, Math.min(n - 1, G.i0 + Math.round(dy / 52)));
       const wst = dx > 70, lmtg = dx > 200;
-      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 6 : 10); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy, wst: wst, lmtg: lmtg, dur: 260 }); }
+      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 6 : 10); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy + (wst ? 0 : (i - G.i0) * 52), wst: wst, lmtg: lmtg, dur: 260 }); }
     }
     else if (G.kind === 'dth') { const t = Math.round(G.t0 + dx / 374 * 60); if (t !== G.lt) { G.lt = t; hap(3); } set({ t: t, ts: t, dur: 120, ease: 'lin' }); }
     else if (G.kind === 'adj') { const a = Object.assign({}, s.adj || {}); a[s.ap] = Math.max(-1, Math.min(1, +(G.a0 + dx / 175).toFixed(2))); const st = Math.round(a[s.ap] * 20); if (st !== G.lt) { G.lt = st; hap(3); } set({ adj: a, dur: 1 }); }
     else if (G.kind === 'jog') { const t = Math.round(G.t0 + dx / 6); if (t !== G.lt) { G.lt = t; hap(3); } set({ t: t, ts: t, jog: Math.round(dx / 3), dur: 120, ease: 'lin' }); }
     else if (G.kind === 'hold' && s.rad) {
       const pick = [...P.querySelectorAll('.rad18 .rbt')].map(b => { const r = b.getBoundingClientRect(); return [b.classList.contains('xpin') ? 'pin' : 'com', Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2))]; }).sort((a, b) => a[1] - b[1])[0];
-      const sel = pick && pick[1] < 70 ? pick[0] : null; if (sel !== s.radsel) set({ radsel: sel, dur: 200 });
+      const sel = pick && pick[1] < 70 ? pick[0] : null; if (sel !== s.radsel) { hap(sel ? 14 : 6); set({ radsel: sel, dur: 200 }); }
     }
   };
   const end = e => {
