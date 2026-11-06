@@ -3853,6 +3853,11 @@ button svg{flex-shrink:0}
 .r20.r20[data-xsrc^="e-"][data-xfer="2"] .stg12 .fr12.b{opacity:1!important;transition:opacity .28s ease .18s!important}
 /* side panels reach the top of the screen (no strip of the case peeking above them) */
 .r20.r20 .rp12::before,.r20.r20 .lp12::before{content:'';position:absolute;left:0;right:0;top:-47px;height:48px;background:inherit;pointer-events:none}
+/* key frames list: follows the finger while dragging; a filter change fades the new set in */
+.r20.r20 .rp18.xdr .xkv{transition:opacity .22s!important}
+.r20.r20 .rp18 .xkfw.xsw .xkv > *{animation:kfin .32s cubic-bezier(.3,.8,.2,1) both}
+.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(2){animation-delay:.03s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(3){animation-delay:.06s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(4){animation-delay:.09s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(5){animation-delay:.12s}
+@keyframes kfin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5621,6 +5626,35 @@ live() {
     this._search = { sin, run };
   }
 
+  // ---------- key frames panel: the filter chips really filter (pinned, comments, SBI, SPI)
+  const KFW = P.querySelector('.rp18 .xkfw');
+  if (KFW && !KFW._f) {
+    KFW._f = true;
+    const views = { c: KFW.querySelector('.xkv.xc'), f: KFW.querySelector('.xkv.xf'), g: KFW.querySelector('.xkv.xg') };
+    const orig = {}, tpl = {}; Object.keys(views).forEach(k => { if (views[k]) { orig[k] = views[k].innerHTML; tpl[k] = views[k].firstElementChild.cloneNode(true); } });
+    const SB = '#D6941A', ST = '#1E9D73', IC = '#855FF7', CO = '#2679DB';
+    const SETS = [null,
+      { n: '5 comments', it: [['th_blood', '4:12:24', 'Back', 'Small bowel', SB, 'Comment'], ['th_erosion', '4:30:30', 'Front', 'Small bowel', SB, 'Comment'], ['th_m3', '3:44:10', 'Back', 'Stomach', ST, 'Comment'], ['th_angio', '5:00:50', 'Front', 'Small bowel', SB, 'Comment'], ['th_polyp', '5:30:50', 'Back', 'Ileocecal valve', IC, 'Comment']] },
+      { n: '4 SBI flags', it: [['th_blood', '4:12:24', 'Back', 'Small bowel', SB, 'SBI 94%'], ['th_angio', '5:00:50', 'Front', 'Small bowel', SB, 'SBI 81%'], ['th_m6', '2:31:40', 'Back', 'Stomach', ST, 'SBI 67%'], ['th_erosion', '4:30:30', 'Front', 'Small bowel', SB, 'SBI 58%']] },
+      { n: '3 SPI flags', it: [['th_polyp', '5:30:50', 'Back', 'Ileocecal valve', IC, 'SPI 88%'], ['th_erythema', '5:55:50', 'Front', 'Colon', CO, 'SPI 72%'], ['th_m2', '3:16:50', 'Front', 'Stomach', ST, 'SPI 54%']] }];
+    const lineSpan = (sp, col, txt) => { if (!sp) return; const i = sp.querySelector('i'); sp.textContent = ''; if (i) { i.style.background = col; sp.appendChild(i); } sp.appendChild(document.createTextNode(txt)); };
+    const make = (k, [th, tm, side, reg, col, lab]) => {
+      const el = tpl[k].cloneNode(true); const t = el.querySelector('.xth'); if (t) t.style.background = 'url(assets/' + th + '.jpg) center/cover no-repeat';
+      if (k === 'c') { const b = el.querySelector('.xtx b'); if (b) b.textContent = tm + ' · ' + side; lineSpan(el.querySelector('.xtx span'), col, lab + ' · ' + reg); }
+      if (k === 'f') { const em = el.querySelector('.xth em'); if (em) em.textContent = side; const b = el.querySelector('.xtx b'); if (b) b.textContent = tm; lineSpan(el.querySelector('.xtx span'), col, reg + ' · ' + lab); }
+      if (k === 'g') { const sm = el.querySelector('small'); if (sm) sm.textContent = tm; }
+      return el;
+    };
+    const meta = KFW.querySelector('.xmeta > span'); const meta0 = meta ? meta.textContent : '';
+    this._kfFilter = idx => {
+      KFW.querySelectorAll('.xflt .ch18').forEach((c, i) => c.classList.toggle('on', i === idx));
+      Object.keys(views).forEach(k => { const v = views[k]; if (!v) return; if (!SETS[idx]) { v.innerHTML = orig[k]; return; } v.textContent = ''; SETS[idx].it.forEach(sp => v.appendChild(make(k, sp))); });
+      if (meta) meta.textContent = SETS[idx] ? SETS[idx].n : meta0;
+      const rp = P.querySelector('.rp18'); if (rp) { rp.style.setProperty('--kvs', '0px'); rp._kvs = 0; }
+      KFW.classList.remove('xsw'); void KFW.offsetWidth; KFW.classList.add('xsw');
+    };
+  }
+
   // ---------- back: closes whatever is on top (phone back gesture, or a swipe in from the left edge)
   const back = () => {
     const s = L();
@@ -5720,6 +5754,7 @@ live() {
     }
     if (s.kp) {
       if (c('.rp18 .clp')) { seq([[420, { kp: 0, dur: 420, ease: 'out' }], [10, { chrome: 0, dur: 380, ease: 'out' }]]); return; }
+      const fch = c('.rp18 .xflt .ch18'); if (fch && this._kfFilter) { this._kfFilter([...fch.parentNode.children].indexOf(fch)); return; }
       if (c('.rp18 .xt1')) { set({ tab: 'kf', dur: 260 }); return; }
       if (c('.rp18 .xt2')) { set({ tab: 'men', dur: 260 }); return; }
       const v = c('.rp18 .vt18 button'); if (v) { set({ kv: v.classList.contains('xc') ? 'c' : v.classList.contains('xg') ? 'g' : 'f', dur: 280 }); return; }
@@ -5828,6 +5863,8 @@ live() {
     window._gk = G.kind;
     if (G.kind === 'pswipe') {
       if (!G.axis && Math.abs(dx) + Math.abs(dy) > 10) G.axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? 'x' : 'y';
+      if (G.axis === 'y' && G.pan === 'kp') { suppress = true; const w = P.getBoundingClientRect().width / 390; const rp = P.querySelector('.rp18'); const lst = P.querySelector('.rp18 .xlst'); const kv = P.querySelector('.r18 .rp18 .xkv.x' + (L().kv || 'f'));
+        if (rp && lst && kv) { if (G.k0 == null) { G.k0 = rp._kvs || 0; rp.classList.add('xdr'); } const max = Math.max(0, kv.scrollHeight - lst.clientHeight); const v = Math.max(0, Math.min(max, G.k0 - dy / w)); rp._kvs = v; rp.style.setProperty('--kvs', v + 'px'); } return; }
       if (G.axis === 'x') { suppress = true; const w = P.getBoundingClientRect().width / 390; const el = P.querySelector(G.pan === 'kp' ? '.rp12' : '.lp12');
         const off = G.pan === 'kp' ? Math.max(0, dx / w) : Math.min(0, dx / w); if (el) { el.style.transition = 'none'; el.style.transform = 'translateX(' + off + 'px)'; } }
       return;
@@ -5865,6 +5902,8 @@ live() {
     }
     const dx = e.clientX - g.x, dy = e.clientY - g.y;
     if (g.kind === 'pswipe') {
+      { const rp = P.querySelector('.rp18'); if (rp) rp.classList.remove('xdr'); }
+      if (g.axis === 'y') return;
       const el = P.querySelector(g.pan === 'kp' ? '.rp12' : '.lp12'); const w = P.getBoundingClientRect().width / 390;
       const d = (g.pan === 'kp' ? dx : -dx) / w; const fast = d / Math.max(1, Date.now() - g.t) > 0.4;
       if (el) { el.style.transition = ''; void el.offsetWidth; }
