@@ -1,7 +1,7 @@
 // Keeps the prototype working offline once it has been opened.
 // Pages load fresh from the network when there is one, so updates show up straight away.
 // Bump VERSION whenever you change a file and want every phone to drop its old copy.
-const VERSION = 'capsule-reader-v20';
+const VERSION = 'capsule-reader-v21';
 const SHELL = [
   './', './index.html', './desktop.html', './sizes.html', './support.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'

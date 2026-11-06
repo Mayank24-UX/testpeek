@@ -5822,7 +5822,8 @@ live() {
     const tg = hit(e.clientX, e.clientY, e.target), c = s => tg.closest(s), s = L();
     G = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false, kind: null };
     if (this._search && document.activeElement === this._search.sin && !c('.srch18')) this._search.sin.blur();
-    const pr = P.getBoundingClientRect(); if ((e.clientX - pr.left) / (pr.width / 390) < 14) { G.kind = 'edge'; return; }
+    const pr = P.getBoundingClientRect(); const onRail = inCase() && (() => { const r = (P.querySelector('.rc17 .rl18') || P.querySelector('.rc17')).getBoundingClientRect(); return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top && e.clientY <= r.bottom; })();
+    if (!onRail && (e.clientX - pr.left) / (pr.width / 390) < 14) { G.kind = 'edge'; return; }
     if (!inCase()) {
       if (s.drw || s.ntf || s.sum) return;
       if (c('.pgw19')) { G.kind = 'scroll'; G.h0 = s.pg ? (s.hs2 || 0) : (s.hs || 0); }
@@ -5833,7 +5834,7 @@ live() {
     if ((s.kp >= 1 || s.lp >= 1) && s.cmode === '0' && !s.ddo) { G.kind = 'pswipe'; G.pan = s.kp >= 1 ? 'kp' : 'lp'; return; }
     if (s.cmode !== '0' || s.kp || s.lp || s.ddo) return;
     const rr0 = (P.querySelector('.rc17 .rl18') || P.querySelector('.rc17')).getBoundingClientRect();
-    if (e.clientX >= rr0.left && e.clientX <= rr0.right + 6 && e.clientY >= rr0.top && e.clientY <= rr0.bottom) { G.kind = 'rail'; G.tm = setTimeout(() => railOpen(e.clientY), 260); e.preventDefault(); return; }
+    if (e.clientX >= rr0.left - 6 && e.clientX <= rr0.right + 6 && e.clientY >= rr0.top && e.clientY <= rr0.bottom) { G.kind = 'rail'; G.tm = setTimeout(() => railOpen(e.clientY), 260); e.preventDefault(); return; }
     if (c('.dt18')) { G.kind = 'dt'; G.t0 = s.t; G.tm = setTimeout(() => { G.kind = 'dth'; hap(12); stopPlay(); set({ dth: true, chrome: 1, nh: 1, rh: 1, dur: 320, ease: 'out' }); }, 300); return; }
     if (c('.c20 .dw20')) { G.kind = 'adj'; const a = Object.assign({}, s.adj || {}); G.a0 = a[s.ap] || 0; e.preventDefault(); return; }
     if (c('.c20 .wl20')) { G.kind = 'jog'; G.t0 = s.t; G.ln = 0; stopPlay(); e.preventDefault(); return; }
@@ -5846,7 +5847,7 @@ live() {
   const railY0 = () => { const r = P.querySelector('.rc17 .rl18') || P.querySelector('.rc17'); return r.getBoundingClientRect(); };
   const railOpen = (y) => {
     hap(14);
-    stopPlay(); const s = L(); const rr = railY0(); const ry = y - P.getBoundingClientRect().top;
+    stopPlay(); const s = L(); const rr = railY0(); const pr0 = P.getBoundingClientRect(); const ry = (y - pr0.top) / (pr0.width / 390);
     const i = regionIdx(s.t); G.kind = 'wheel'; G.i0 = i; G.i = i; G.wy = ry;
     set({ lm: true, lmIdx: i, nowIdx: i, rlh: i, wy: ry, wst: false, lmtg: false, dur: 200 });
   };
@@ -5859,6 +5860,7 @@ live() {
   const move = e => {
     if (!G) return; const dx = e.clientX - G.x, dy = e.clientY - G.y; const s = L();
     if (Math.abs(dx) + Math.abs(dy) > 8) G.moved = true;
+    if (G.kind === 'rail' && G.moved && Math.abs(dy) >= Math.abs(dx)) { clearTimeout(G.tm); const y0 = G.y; G.y = e.clientY; G.x = e.clientX; railOpen(y0); }
     if ((G.kind === 'frame' || G.kind === 'rail' || G.kind === 'dt') && G.moved) { clearTimeout(G.tm); if (G.kind === 'frame') G.kind = 'swipe'; else if (G.kind === 'dt') G.kind = null; else G.kind = null; }
     window._gk = G.kind;
     if (G.kind === 'pswipe') {
