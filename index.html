@@ -3851,6 +3851,8 @@ button svg{flex-shrink:0}
 .r20.r20 .xhscroll .sne.on{display:block}
 /* entering a case: the back view fades in while the front one is still growing out of the card */
 .r20.r20[data-xsrc^="e-"][data-xfer="2"] .stg12 .fr12.b{opacity:1!important;transition:opacity .28s ease .18s!important}
+/* side panels reach the top of the screen (no strip of the case peeking above them) */
+.r20.r20 .rp12::before,.r20.r20 .lp12::before{content:'';position:absolute;left:0;right:0;top:-47px;height:48px;background:inherit;pointer-events:none}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5792,6 +5794,8 @@ live() {
       return;
     }
     if (s.rp) { if (c('.rpg18') && !c('button')) { G.kind = 'rscroll'; G.h0 = s.rs || 0; const fd = c('.fd18'); if (fd && fd.classList.contains('r3')) G.tm = setTimeout(() => { set({ rch: true, dur: 380 }); G.kind = 'rch'; }, HOLD); } return; }
+    // side panels: swipe them back the way they came (key frames to the right, landmarks to the left)
+    if ((s.kp >= 1 || s.lp >= 1) && s.cmode === '0' && !s.ddo) { G.kind = 'pswipe'; G.pan = s.kp >= 1 ? 'kp' : 'lp'; return; }
     if (s.cmode !== '0' || s.kp || s.lp || s.ddo) return;
     const rr0 = (P.querySelector('.rc17 .rl18') || P.querySelector('.rc17')).getBoundingClientRect();
     if (e.clientX >= rr0.left && e.clientX <= rr0.right + 6 && e.clientY >= rr0.top && e.clientY <= rr0.bottom) { G.kind = 'rail'; G.tm = setTimeout(() => railOpen(e.clientY), 260); e.preventDefault(); return; }
@@ -5822,6 +5826,12 @@ live() {
     if (Math.abs(dx) + Math.abs(dy) > 8) G.moved = true;
     if ((G.kind === 'frame' || G.kind === 'rail' || G.kind === 'dt') && G.moved) { clearTimeout(G.tm); if (G.kind === 'frame') G.kind = 'swipe'; else if (G.kind === 'dt') G.kind = null; else G.kind = null; }
     window._gk = G.kind;
+    if (G.kind === 'pswipe') {
+      if (!G.axis && Math.abs(dx) + Math.abs(dy) > 10) G.axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? 'x' : 'y';
+      if (G.axis === 'x') { suppress = true; const w = P.getBoundingClientRect().width / 390; const el = P.querySelector(G.pan === 'kp' ? '.rp12' : '.lp12');
+        const off = G.pan === 'kp' ? Math.max(0, dx / w) : Math.min(0, dx / w); if (el) { el.style.transition = 'none'; el.style.transform = 'translateX(' + off + 'px)'; } }
+      return;
+    }
     if (G.kind === 'scroll' && !inCase() && !G.axis && Math.abs(dx) + Math.abs(dy) > 10) { G.axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y'; if (G.axis === 'x') { G.kind = 'tabs'; suppress = true; } }
     if (G.kind === 'tabs') { const w = P.getBoundingClientRect().width / 390; const pgs = P.querySelector('.h19 .pgs19'); if (pgs) { const lim = (s.pg === 0 && dx > 0) || (s.pg === 2 && dx < 0) ? 0.25 : 1; pgs.style.setProperty('transition', 'none', 'important'); pgs.style.setProperty('transform', 'translateX(' + (-390 * (s.pg || 0) + dx / w * lim) + 'px)', 'important'); } return; }
     if (G.kind === 'scroll') { fastScroll(s.pg ? 'hs2' : 'hs', G.h0 - dy); suppress = G.moved; }
@@ -5854,6 +5864,14 @@ live() {
       cancelAnimationFrame(this._mom); this._mom = requestAnimationFrame(step);
     }
     const dx = e.clientX - g.x, dy = e.clientY - g.y;
+    if (g.kind === 'pswipe') {
+      const el = P.querySelector(g.pan === 'kp' ? '.rp12' : '.lp12'); const w = P.getBoundingClientRect().width / 390;
+      const d = (g.pan === 'kp' ? dx : -dx) / w; const fast = d / Math.max(1, Date.now() - g.t) > 0.4;
+      if (el) { el.style.transition = ''; void el.offsetWidth; }
+      if (g.axis === 'x' && (d > 110 || (fast && d > 30))) { suppress = true; hap(8); back(); }
+      else if (el) { el.style.transform = 'translateX(0)'; set({ dur: 300 }); }
+      return;
+    }
     if (g.kind === 'edge') { if (dx > 60 && Math.abs(dx) > Math.abs(dy)) { suppress = true; hap(10); back(); } return; }
     if (g.kind === 'tabs') {
       suppress = true; const pgs = P.querySelector('.h19 .pgs19'); const w = P.getBoundingClientRect().width / 390;
