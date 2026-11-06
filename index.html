@@ -3849,6 +3849,8 @@ button svg{flex-shrink:0}
 .r20.r20 .xhscroll .xhid{display:none!important}
 .r20.r20 .xhscroll .sne{display:none;padding:40px 16px;text-align:center;font-size:15px;line-height:20px;color:#636363}
 .r20.r20 .xhscroll .sne.on{display:block}
+/* entering a case: the back view fades in while the front one is still growing out of the card */
+.r20.r20[data-xsrc^="e-"][data-xfer="2"] .stg12 .fr12.b{opacity:1!important;transition:opacity .28s ease .18s!important}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5540,14 +5542,16 @@ live() {
     stopPlay(); setWho(who && who[0] === 'John');
     const pre = { xsrc: xsrc, t: t, ts: t, w0: t - 30, who2: who };
     const m = Object.assign({}, mid || {});
-    seq([[140, Object.assign({ xfer: 1, cbin: false, edges: false, cmdup: false }, pre)],
-         [560, Object.assign({ xfer: 2, scr: 'case', dur: 460 }, m)],
-         [520, { xfer: 3, cbin: true, edges: true, cmdup: true, dur: 440, ease: 'out' }]].concat(after ? [[10, after]] : []));
+    // one continuous move: the source grows into the front view while the rest of the case arrives around it
+    seq([[60, Object.assign({ xfer: 1, cbin: false, edges: false, cmdup: false }, pre)],
+         [240, Object.assign({ xfer: 2, scr: 'case', dur: 460 }, m)],
+         [240, { cbin: true, edges: true, cmdup: true, dur: 420, ease: 'out' }],
+         [10, { xfer: 3, dur: 300 }]].concat(after ? [[10, after]] : []));
   };
   const leave = () => {
     stopPlay();
-    seq([[520, { xfer: 4, cbin: false, edges: false, cmdup: false, dur: 440, ease: 'out', rp: 0, rs: 0, kp: 0, lp: 0, chrome: 0, nh: 0, ddo: false, bm: '0', focus: '0', cmode: '0', held: null }],
-         [560, { xfer: 5, scr: 'home', dur: 460 }],
+    seq([[180, { xfer: 4, cbin: false, edges: false, cmdup: false, dur: 360, ease: 'out', rp: 0, rs: 0, kp: 0, lp: 0, chrome: 0, nh: 0, ddo: false, bm: '0', focus: '0', cmode: '0', held: null }],
+         [480, { xfer: 5, scr: 'home', dur: 460 }],
          [10, { xfer: 0, dur: 1, zm: 0, zf: null }]]);
   };
 
