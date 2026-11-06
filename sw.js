@@ -1,7 +1,7 @@
 // Keeps the prototype working offline once it has been opened.
 // Pages load fresh from the network when there is one, so updates show up straight away.
 // Bump VERSION whenever you change a file and want every phone to drop its old copy.
-const VERSION = 'capsule-reader-v9';
+const VERSION = 'capsule-reader-v10';
 const SHELL = [
   './', './index.html', './desktop.html', './sizes.html', './support.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
@@ -29,7 +29,7 @@ self.addEventListener('fetch', (e) => {
   if (isPage) {
     // Network first for pages, cached copy when offline.
     e.respondWith(
-      fetch(req).then((res) => {
+      fetch(req, { cache: 'no-store' }).then((res) => {
         const copy = res.clone();
         caches.open(VERSION).then((c) => c.put(req, copy));
         return res;
