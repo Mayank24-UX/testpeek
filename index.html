@@ -3858,6 +3858,10 @@ button svg{flex-shrink:0}
 .r20.r20 .rp18 .xkfw.xsw .xkv > *{animation:kfin .32s cubic-bezier(.3,.8,.2,1) both}
 .r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(2){animation-delay:.03s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(3){animation-delay:.06s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(4){animation-delay:.09s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(5){animation-delay:.12s}
 @keyframes kfin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* landmark wheel: every section stays visible while you move between them */
+.r20.r20 .wk20 .wi20.d1,.r20.r20 .wk20 .wi20.d2,.r20.r20 .wk20 .wi20.d3{opacity:.86;transform:scale(.94)}
+.r20.r20 .wk20 .wi20{transition:background-color .15s,transform .18s cubic-bezier(.3,1.3,.5,1),opacity .15s}
+.r20.r20 .ws20{transition:top .18s cubic-bezier(.3,1.2,.5,1),opacity .2s,transform .2s,background-color .2s!important}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5849,7 +5853,18 @@ live() {
     hap(14);
     stopPlay(); const s = L(); const rr = railY0(); const pr0 = P.getBoundingClientRect(); const ry = (y - pr0.top) / (pr0.width / 390);
     const i = regionIdx(s.t); G.kind = 'wheel'; G.i0 = i; G.i = i; G.wy = ry;
-    set({ lm: true, lmIdx: i, nowIdx: i, rlh: i, wy: ry, wst: false, lmtg: false, dur: 200 });
+    // the whole list opens next to the finger and stays put; keep it on screen
+    const n = this.D.lmn.length; let wy2 = ry; const top = ry - 22 - i * 52, bot = top + n * 52 - 8;
+    if (top < 104) wy2 += 104 - top; if (bot > 740) wy2 -= bot - 740; G.wy2 = wy2;
+    set({ lm: true, lmIdx: i, nowIdx: i, rlh: i, wy: wy2, wst: false, lmtg: false, dur: 200 });
+    wheelPos(i, i);
+  };
+  // list fixed in place, the highlight (and the Set start tag) sit on the row under the finger
+  const wheelPos = (i0, k) => {
+    const wh = P.querySelector('.wk20'), wl = wh && wh.querySelector('.whl'), tg = P.querySelector('.ws20'); if (!wh || !G) return;
+    wh.style.top = (G.wy2 - 2 * 52 - 22) + 'px'; if (wl) { wl.style.transition = 'none'; wl.style.transform = 'translateY(' + ((2 - i0) * 52) + 'px)'; }
+    if (tg) tg.style.top = (G.wy2 + (k - i0) * 52 - 26) + 'px';
+    const hn = wh.querySelector('.hn20'); if (hn) hn.style.top = ((2 - i0) * 52 - 26) + 'px';
   };
   P.addEventListener('pointermove', e => {
     if (!G) return; const now = performance.now();
@@ -5876,14 +5891,12 @@ live() {
     if (G.kind === 'scroll') { fastScroll(s.pg ? 'hs2' : 'hs', G.h0 - dy); suppress = G.moved; }
     else if (G.kind === 'rscroll') { clearTimeout(G.tm); fastScroll('rs', G.h0 - dy); suppress = G.moved; }
     else if (G.kind === 'wheel') {
-      // the wheel stays where it opened; the list moves with the finger like a picker (drag up for later sections)
+      // the list stays where it opened; the finger moves the highlight from row to row (down for later sections)
       const n = this.D.lmn.length, w = P.getBoundingClientRect().width / 390;
       const wst = dx > 70, lmtg = dx > 200;
-      let off = -dy / w; const lo = -G.i0 * 52, hi = (n - 1 - G.i0) * 52;
-      if (off < lo) off = lo - Math.min(24, (lo - off) * 0.3); if (off > hi) off = hi + Math.min(24, (off - hi) * 0.3);
-      const i = Math.max(0, Math.min(n - 1, G.i0 + Math.round(off / 52)));
-      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 8 : 10); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy, wst: wst, lmtg: lmtg, dur: 260 }); }
-      const wl = P.querySelector('.wk20 .whl'); if (wl) { wl.style.transition = wst ? '' : 'none'; wl.style.transform = 'translateY(' + ((2 - G.i0) * 52 - (wst ? 0 : off)) + 'px)'; }
+      const i = Math.max(0, Math.min(n - 1, G.i0 + Math.round(dy / w / 52)));
+      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 8 : 10); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy2, wst: wst, lmtg: lmtg, dur: 200 }); }
+      wheelPos(G.i0, wst ? G.i0 : i);
     }
     else if (G.kind === 'dth') { const t = Math.round(G.t0 + dx / 374 * 60); if (t !== G.lt) { G.lt = t; hap(3); } set({ t: t, ts: t, dur: 120, ease: 'lin' }); }
     else if (G.kind === 'adj') { const a = Object.assign({}, s.adj || {}); a[s.ap] = Math.max(-1, Math.min(1, +(G.a0 + dx / 175).toFixed(2))); const st = Math.round(a[s.ap] * 20); if (st !== G.lt) { G.lt = st; hap(3); } set({ adj: a, dur: 1 }); }
@@ -5928,7 +5941,7 @@ live() {
       set({ nav: i, pg: i, hs: i === (s.pg || 0) ? s.hs : 0, hs2: i === (s.pg || 0) ? s.hs2 : 0, dur: 380, ease: 'out' }); return;
     }
     if (g.kind === 'wheel') {
-      suppress = true; { const wl = P.querySelector('.wk20 .whl'); if (wl) wl.style.transition = ''; }
+      suppress = true; setTimeout(() => { const wl = P.querySelector('.wk20 .whl'); if (wl) wl.style.transition = ''; }, 400);
       if (g.lmtg) { const t = s.t; undoPatch = { lmset2: false }; set({ lm: false, wst: false, lmtg: false, rlh: -1, lmset2: true, toast: '<b>' + this.D.lmn[g.i0] + '</b> start set to <b>' + fmtt(t) + '</b>', bk: 'lm', undo: true, dur: 420, ease: 'spr' }); }
       else if (g.wst) { set({ lm: false, wst: false, lmtg: false, rlh: -1, dur: 360, ease: 'out' }); }
       else if (g.i !== g.i0) { const st = K.ST[g.i]; set({ lm: false, rlh: -1, t: st, ts: st, w0: st - 6, dur: 360, ease: 'out', toast: 'Jumped to <b>' + this.D.lmn[g.i] + '</b> · ' + fmtt(st), bk: 'ok' }); }
