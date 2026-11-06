@@ -52,9 +52,9 @@ Then open `http://localhost:8000` in your browser. To see the phone app on a com
 
 | File | What it is |
 |---|---|
-| `index.html` | The phone app: Patients, Insights, Community, the menu, notifications, a case and the report. It reflows for tablets too. |
+| `index.html` + `assets/` | The phone prototype, exactly the Round 20 design: Patients, Community, Insights, menu, notifications, a case (rail and wheel, panels, command bar, pencil, hold to pin or comment) and the report. |
 | `desktop.html` + `support.js` | The desktop prototype. `support.js` is the runtime it needs. |
-| `sizes.html` | The responsive checker: devices, text sizes, and a check for anything running off the edge. |
+| `sizes.html` | An earlier responsive sketch for checking text sizes; not the final design. |
 | `manifest.webmanifest`, `icons/` | What makes "Add to Home Screen" open full screen with the right icon. |
 | `sw.js` | Keeps it working offline and picks up your changes. |
 | `video/` | Where the real capsule clip goes later. Read `video/README.md` first. |
