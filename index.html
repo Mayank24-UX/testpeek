@@ -140,7 +140,7 @@ body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:#F1F1F1}
 .btn.g{background:#1E9D73;color:#FFFFFF}
 .btn.l{background:#E0E0E0;color:#0D0D0D}
 .kl{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#757982}
-@media (prefers-reduced-motion: reduce){.spin{animation:none}}
+
 
 body{background:#F1F1F1}
 .b10{position:relative;width:390px;background:#F1F1F1;font-family:'IBM Plex Sans',sans-serif;color:#0D0D0D}
@@ -159,7 +159,7 @@ body{background:#F1F1F1}
 .ctl10 .dts i.on{background:#B5B5B5}.ctl10 .dts i.cur{background:#FFFFFF}
 .ph10{position:relative;width:390px;height:844px;overflow:clip;background:#FFFFFF;--d:450ms;--e:cubic-bezier(.3,.7,.2,1)}
 .ph10.still,.ph10.still *{transition:none!important;animation:none!important}
-@media (prefers-reduced-motion: reduce){.ph10 *,.ph10{transition-duration:.01ms!important;animation:none!important}}
+
 .sb10{height:47px;flex-shrink:0;display:flex;align-items:center;padding:6px 30px 0 34px;font-size:16px;font-weight:600}
 .sb10 .r{margin-left:auto;display:flex;align-items:center;gap:6px}
 .hi10{position:absolute;left:50%;bottom:8px;width:134px;height:5px;border-radius:3px;background:#0D0D0D;translate:-50% 0;z-index:3}
@@ -508,7 +508,7 @@ body{background:#F1F1F1}
 .ph12 *{box-sizing:border-box}
 :where(.ph12 button){font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
 .ph12.still,.ph12.still *{transition:none!important;animation:none!important}
-@media (prefers-reduced-motion: reduce){.ph12,.ph12 *{transition-duration:.01ms!important;animation:none!important}}
+
 .ph12 .home{transition:transform var(--d) var(--e)}
 .ph12[data-scr="case"] .home{transform:translateX(-28%)}
 .ph12 .case12{position:absolute;inset:0;background:#F1F1F1;transition:transform var(--d) var(--e)}
@@ -3831,6 +3831,15 @@ button svg{flex-shrink:0}
 .r20.r20[data-bm="pen"] .s-pen .xpin{transition-delay:.1s,.1s}
 .r20.r20 .s-pen .xpx,.r20.r20 .s-pick .xcx{flex:0 0 56px;margin-left:auto}
 .r20.r20 .s-pick .hn{flex:1 1 auto}
+/* collapse buttons: round like every other icon button; the landmarks one lines up with the rows, clear of the rail */
+.r20.r20 .lp18 .clp,.r20.r20 .rp18 .clp,.r20.r20 .rpg18 .clp{border-radius:22px!important}
+.r20.r20 .lp18 > .kh .clp{transform:translateX(-48px)}
+/* the patient pill morphs into its card: the card starts as the pill and grows down out of it */
+.r20.r20 .cb18{position:relative;z-index:57}
+.r20.r20 .dd18{transform:translateY(var(--mt,-52px))!important;clip-path:inset(0 var(--mr,100px) var(--mb,240px) var(--ml,100px) round 22px);background:#F4F4F4!important;opacity:0!important;transition:transform .32s cubic-bezier(.4,0,.2,1),clip-path .32s cubic-bezier(.4,0,.2,1),background-color .28s,opacity 0s linear .32s!important}
+.r20.r20[data-ddo="1"] .dd18{transform:none!important;clip-path:inset(-48px -48px -48px -48px round 72px);background:#FFFFFF!important;opacity:1!important;transition:transform .5s cubic-bezier(.3,1.12,.4,1),clip-path .5s cubic-bezier(.3,1,.4,1),background-color .3s,opacity 0s!important}
+.r20.r20 .dd18 > *{opacity:0;transform:translateY(-6px);transition:opacity .12s,transform .2s}
+.r20.r20[data-ddo="1"] .dd18 > *{opacity:1;transform:none;transition:opacity .26s ease-out .14s,transform .4s cubic-bezier(.3,1.2,.4,1) .1s}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5551,6 +5560,32 @@ live() {
   const openComposer = (v, mode) => set({ bm: '0', radsel: null, rad: false, held: v, hold: holdPt(v), focus: v, cmode: mode || 'comment', chips: mode !== 'mention', ph: mode === 'mention' ? 'Mention someone on this frame' : null, dur: 420, ease: 'out' });
   const closeComposer = (toast) => set(Object.assign({ held: null, focus: '0', cmode: '0', kb: false, picker: false, meas: false, line: 0, txt: '', ph: null, dur: 420 }, toast ? { toast: toast, bk: 'ok' } : {}));
 
+  // ---------- back: closes whatever is on top (phone back gesture, or a swipe in from the left edge)
+  const back = () => {
+    const s = L();
+    if (!inCase()) {
+      if (s.drw) { set(s.lrn ? { lrn: false, dur: 420, ease: 'out' } : { drw: false, lrn: false, dur: 420, ease: 'out' }); return true; }
+      if (s.ntf) { set({ ntf: false, dur: 380, ease: 'out' }); return true; }
+      if (s.sum) { set({ sum: false, dur: 380, ease: 'out' }); return true; }
+      if (s.pg) { set({ nav: 0, pg: 0, hs: 0, hs2: 0, dur: 420, ease: 'out' }); return true; }
+      return false;
+    }
+    if (s.rp) { set({ rp: 0, rs: 0, dur: 420, ease: 'out' }); return true; }
+    if (s.ddo) { set({ ddo: false, dur: 300, ease: 'out' }); return true; }
+    if (s.lp) { seq([[420, { lp: 0, dur: 420, ease: 'out' }], [380, { chrome: 0, dur: 380, ease: 'out' }], [10, { nh: 0, dur: 340, ease: 'out' }]]); return true; }
+    if (s.kp) { seq([[420, { kp: 0, dur: 420, ease: 'out' }], [10, { chrome: 0, dur: 380, ease: 'out' }]]); return true; }
+    if (s.cmode && s.cmode !== '0') { closeComposer(); return true; }
+    if (s.bm && s.bm !== '0' && s.bm !== 0) { set({ bm: '0', radsel: null, dur: 320, ease: 'out' }); return true; }
+    if (s.zm) { set({ zm: 0, zf: null, dur: 420, ease: 'out' }); return true; }
+    leave(); return true;
+  };
+  this._back = back;
+  if (window.top === window && !window._crBack) {
+    window._crBack = true;
+    try { history.replaceState({ cr: 0 }, ''); history.pushState({ cr: 1 }, ''); } catch (e) {}
+    addEventListener('popstate', () => { if (back()) { try { history.pushState({ cr: 1 }, ''); } catch (e) {} } else history.back(); });
+  }
+
   // hit-test past layers that are present but not showing (closed panels, faded overlays)
   const vis = el => { if (getComputedStyle(el).pointerEvents === 'none') return false; for (let e = el; e && e !== P.parentElement; e = e.parentElement) { const cs = getComputedStyle(e); if (+cs.opacity < 0.05 || cs.visibility === 'hidden') return false; } return true; };
   const hit = (x, y, fb) => { if (!x && !y) return fb; const l = this.L; const el = document.elementsFromPoint(x, y).find(e => P.contains(e) && vis(e) && !((l.lp || 0) < 0.5 && e.closest('.lp12')) && !((l.kp || 0) < 0.5 && e.closest('.rp12'))); return el || fb; };
@@ -5643,7 +5678,12 @@ live() {
       return;
     }
     if (c('.cb18 .xbk')) { leave(); return; }
-    if (c('.cb18 .who18')) { set({ ddo: true, dur: 360, ease: 'out' }); return; }
+    if (c('.cb18 .who18')) {
+      const pl = P.querySelector('.cb18 .who18').getBoundingClientRect(), dd = P.querySelector('.dd18'), w = P.getBoundingClientRect().width / 390;
+      if (dd) { let ddt = 0, ddl = 0; for (let o = dd; o && o !== P; o = o.offsetParent) { ddt += o.offsetTop; ddl += o.offsetLeft; } const ddw = dd.offsetWidth, ddh = dd.offsetHeight, pr = P.getBoundingClientRect();
+        const pL = (pl.left - pr.left) / w, pT = (pl.top - pr.top) / w, pW = pl.width / w, pH = pl.height / w;
+        dd.style.setProperty('--mt', (pT - ddt) + 'px'); dd.style.setProperty('--ml', (pL - ddl) + 'px'); dd.style.setProperty('--mr', (ddl + ddw - pL - pW) + 'px'); dd.style.setProperty('--mb', (ddh - pH) + 'px'); }
+      set({ ddo: true, dur: 420, ease: 'out' }); return; }
     if (c('.cb18 .xrpb')) { stopPlay(); set({ rp: 1, dur: 460, ease: 'out' }); return; }
     if (c('.notch')) { set({ tab: 'kf', kp: 1, chrome: 1, dur: 460, ease: 'out' }); return; }
     // command bar
@@ -5661,7 +5701,7 @@ live() {
     if (c('.s-pen .xcom')) { set({ radsel: 'com', tx: { hint2: 'Tap a view to comment on' }, dur: 240 }); return; }
     if (c('.s-pen .xpin')) { set({ radsel: 'pin', tx: { hint2: 'Tap a view to pin it' }, dur: 240 }); return; }
     if (c('.c20 .bk20')) { set({ bm: '0', radsel: null, dur: 320, ease: 'out' }); return; }
-    if (c('.c20 .s-pick .xcx')) { set({ bm: '0', radsel: null, chrome: 1, nh: 1, dur: 320, ease: 'out' }); return; }
+    if (c('.c20 .s-pick .xcx')) { set({ bm: '0', radsel: null, dur: 320, ease: 'out' }); return; }
     // tapping a view
     const v = viewAt(e.clientX, e.clientY);
     if (v) {
@@ -5683,9 +5723,10 @@ live() {
     cancelAnimationFrame(this._mom);
     const tg = hit(e.clientX, e.clientY, e.target), c = s => tg.closest(s), s = L();
     G = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false, kind: null };
+    const pr = P.getBoundingClientRect(); if ((e.clientX - pr.left) / (pr.width / 390) < 14) { G.kind = 'edge'; return; }
     if (!inCase()) {
       if (s.drw || s.ntf || s.sum) return;
-      if (c('.pgw19') && !c('button') && !c('.cn19') && !c('.pc18 .cta20')) { G.kind = 'scroll'; G.h0 = s.pg ? (s.hs2 || 0) : (s.hs || 0); }
+      if (c('.pgw19')) { G.kind = 'scroll'; G.h0 = s.pg ? (s.hs2 || 0) : (s.hs || 0); }
       return;
     }
     if (s.rp) { if (c('.rpg18') && !c('button')) { G.kind = 'rscroll'; G.h0 = s.rs || 0; const fd = c('.fd18'); if (fd && fd.classList.contains('r3')) G.tm = setTimeout(() => { set({ rch: true, dur: 380 }); G.kind = 'rch'; }, HOLD); } return; }
@@ -5718,6 +5759,9 @@ live() {
     if (!G) return; const dx = e.clientX - G.x, dy = e.clientY - G.y; const s = L();
     if (Math.abs(dx) + Math.abs(dy) > 8) G.moved = true;
     if ((G.kind === 'frame' || G.kind === 'rail' || G.kind === 'dt') && G.moved) { clearTimeout(G.tm); if (G.kind === 'frame') G.kind = 'swipe'; else if (G.kind === 'dt') G.kind = null; else G.kind = null; }
+    window._gk = G.kind;
+    if (G.kind === 'scroll' && !inCase() && !G.axis && Math.abs(dx) + Math.abs(dy) > 10) { G.axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y'; if (G.axis === 'x') { G.kind = 'tabs'; suppress = true; } }
+    if (G.kind === 'tabs') { const w = P.getBoundingClientRect().width / 390; const pgs = P.querySelector('.h19 .pgs19'); if (pgs) { const lim = (s.pg === 0 && dx > 0) || (s.pg === 2 && dx < 0) ? 0.25 : 1; pgs.style.setProperty('transition', 'none', 'important'); pgs.style.setProperty('transform', 'translateX(' + (-390 * (s.pg || 0) + dx / w * lim) + 'px)', 'important'); } return; }
     if (G.kind === 'scroll') { const max = [660, 1080, 960][s.pg || 0] || 660; let h = Math.max(0, Math.min(max, G.h0 - dy)); set(s.pg ? { hs2: h, dur: 1 } : { hs: h, dur: 1 }); suppress = G.moved; }
     else if (G.kind === 'rscroll') { clearTimeout(G.tm); set({ rs: Math.max(0, Math.min(760, G.h0 - dy)), dur: 1 }); suppress = G.moved; }
     else if (G.kind === 'wheel') {
@@ -5741,6 +5785,15 @@ live() {
       cancelAnimationFrame(this._mom); this._mom = requestAnimationFrame(step);
     }
     const dx = e.clientX - g.x, dy = e.clientY - g.y;
+    if (g.kind === 'edge') { if (dx > 60 && Math.abs(dx) > Math.abs(dy)) { suppress = true; hap(10); back(); } return; }
+    if (g.kind === 'tabs') {
+      suppress = true; const pgs = P.querySelector('.h19 .pgs19'); const w = P.getBoundingClientRect().width / 390;
+      const fast = Math.abs(dx) / Math.max(1, Date.now() - g.t) > 0.4; let i = s.pg || 0;
+      if ((Math.abs(dx / w) > 90 || (fast && Math.abs(dx / w) > 30)) ) i = Math.max(0, Math.min(2, i + (dx < 0 ? 1 : -1)));
+      if (pgs) { pgs.style.removeProperty('transition'); void pgs.offsetWidth; pgs.style.removeProperty('transform'); }
+      if (i !== (s.pg || 0)) hap(8);
+      set({ nav: i, pg: i, hs: i === (s.pg || 0) ? s.hs : 0, hs2: i === (s.pg || 0) ? s.hs2 : 0, dur: 380, ease: 'out' }); return;
+    }
     if (g.kind === 'wheel') {
       suppress = true;
       if (g.lmtg) { const t = s.t; undoPatch = { lmset2: false }; set({ lm: false, wst: false, lmtg: false, rlh: -1, lmset2: true, toast: '<b>' + this.D.lmn[g.i0] + '</b> start set to <b>' + fmtt(t) + '</b>', bk: 'lm', undo: true, dur: 420, ease: 'spr' }); }
@@ -5781,7 +5834,7 @@ boot() {
   const TR = ['fg', 'dur', 'ease', 'toast', 'bk', 'ring', 'arr', 'undo', 'flash', 'ghost', 'npulse', 'prs'];
   let s = Object.assign({}, this.BASE); this.cum = [];
   this.ST.forEach(st => { s = Object.assign({}, s); TR.forEach(k => { s[k] = this.BASE[k]; }); Object.assign(s, st.s || {}); this.cum.push(s); });
-  this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  this.reduced = false;
   this.prev = null;
   const hm = (location.hash || '').match(/s=(\d+)/);
   if (hm) { const k = Math.min(+hm[1], this.ST.length - 1); if (k > 0) this.show(k - 1, true); this.show(k, !!(location.hash.match(/i=1/))); return; }
@@ -6102,7 +6155,7 @@ html,body{background:#FFFFFF;overflow:hidden;overscroll-behavior:none}
 // Fit the 390 × 844 design to any screen. The mock status bar (top 47 px) is dropped, so the app needs 797 px of height.
 // It scales to whichever runs out first, width or height, and re-fits when the browser bar shows or hides.
 (function () {
-  var TOP = 47, H = 844 - TOP;
+  var TOP = 30, H = 844 - TOP; // keep a little air above the top bar
   function fit() {
     var vw = window.innerWidth, vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     var z = Math.min(vw / 390, vh / H); if (vw > 500) z = Math.min(z, 1.4);
