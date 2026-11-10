@@ -3858,8 +3858,10 @@ button svg{flex-shrink:0}
 .r20.r20 .rp18 .xkfw.xsw .xkv > *{animation:kfin .32s cubic-bezier(.3,.8,.2,1) both}
 .r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(2){animation-delay:.03s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(3){animation-delay:.06s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(4){animation-delay:.09s}.r20.r20 .rp18 .xkfw.xsw .xkv > *:nth-child(5){animation-delay:.12s}
 @keyframes kfin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-/* landmark wheel: every section stays visible while you move between them */
-.r20.r20 .wk20 .wi20.d1,.r20.r20 .wk20 .wi20.d2,.r20.r20 .wk20 .wi20.d3{opacity:.86;transform:scale(.94)}
+/* wheel: rows fade and shrink away from the middle slot */
+.r20.r20 .wk20 .wi20.d1{opacity:.82;transform:scale(.93)}
+.r20.r20 .wk20 .wi20.d2{opacity:.45;transform:scale(.86)}
+.r20.r20 .wk20 .wi20.d3{opacity:0;transform:scale(.8)}
 .r20.r20 .wk20 .wi20{transition:background-color .15s,transform .18s cubic-bezier(.3,1.3,.5,1),opacity .15s}
 .r20.r20 .ws20{transition:top .18s cubic-bezier(.3,1.2,.5,1),opacity .2s,transform .2s,background-color .2s!important}
 /* comment tools: drawings and measurements on the focused frame */
@@ -5931,6 +5933,9 @@ live() {
     if (ptrs.size > 1) return;
     const tg = hit(e.clientX, e.clientY, e.target), c = s => tg.closest(s), s = L();
     G = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false, kind: null };
+    if (this._wp) { const wp = this._wp; this._wp = null; clearTimeout(wp.tm); const pr = P.getBoundingClientRect(), w = pr.width / 390, xd = (e.clientX - pr.left) / w, yd = (e.clientY - pr.top) / w;
+      if (xd < 250 && Math.abs(yd - wp.wy2) < 170) { G.kind = 'wheel'; G.i0 = wp.i0; G.ib = wp.i; G.i = wp.i; G.wy2 = wp.wy2; G.wst = false; G.lmtg = false; hap(6); e.preventDefault(); return; }
+      suppress = true; set({ lm: false, rlh: -1, wst: false, lmtg: false, dur: 300 }); return; }
     if (this._search && document.activeElement === this._search.sin && !c('.srch18')) this._search.sin.blur();
     const pr = P.getBoundingClientRect(); const onRail = inCase() && (() => { const r = (P.querySelector('.rc17 .rl18') || P.querySelector('.rc17')).getBoundingClientRect(); return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top && e.clientY <= r.bottom; })();
     if (!onRail && (e.clientX - pr.left) / (pr.width / 390) < 14) { G.kind = 'edge'; return; }
@@ -5963,18 +5968,9 @@ live() {
     hap(14);
     stopPlay(); const s = L(); const rr = railY0(); const pr0 = P.getBoundingClientRect(); const ry = (y - pr0.top) / (pr0.width / 390);
     const i = regionIdx(s.t); G.kind = 'wheel'; G.i0 = i; G.i = i; G.wy = ry;
-    // the whole list opens next to the finger and stays put; keep it on screen
-    const n = this.D.lmn.length; let wy2 = ry; const top = ry - 22 - i * 52, bot = top + n * 52 - 8;
-    if (top < 104) wy2 += 104 - top; if (bot > 740) wy2 -= bot - 740; G.wy2 = wy2;
+    // a wheel: the chosen section sits in the middle slot beside the finger, one and two neighbours above and below
+    const wy2 = Math.max(214, Math.min(626, ry)); G.wy2 = wy2; G.ib = i;
     set({ lm: true, lmIdx: i, nowIdx: i, rlh: i, wy: wy2, wst: false, lmtg: false, dur: 200 });
-    wheelPos(i, i);
-  };
-  // list fixed in place, the highlight (and the Set start tag) sit on the row under the finger
-  const wheelPos = (i0, k) => {
-    const wh = P.querySelector('.wk20'), wl = wh && wh.querySelector('.whl'), tg = P.querySelector('.ws20'); if (!wh || !G) return;
-    wh.style.top = (G.wy2 - 2 * 52 - 22) + 'px'; if (wl) { wl.style.transition = 'none'; wl.style.transform = 'translateY(' + ((2 - i0) * 52) + 'px)'; }
-    if (tg) tg.style.top = (G.wy2 + (k - i0) * 52 - 26) + 'px';
-    const hn = wh.querySelector('.hn20'); if (hn) hn.style.top = ((2 - i0) * 52 - 26) + 'px';
   };
   P.addEventListener('pointermove', e => {
     if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -6014,12 +6010,14 @@ live() {
     if (G.kind === 'scroll') { fastScroll(s.pg ? 'hs2' : 'hs', G.h0 - dy); suppress = G.moved; }
     else if (G.kind === 'rscroll') { clearTimeout(G.tm); fastScroll('rs', G.h0 - dy); suppress = G.moved; }
     else if (G.kind === 'wheel') {
-      // the list stays where it opened; the finger moves the highlight from row to row (down for later sections)
-      const n = this.D.lmn.length, w = P.getBoundingClientRect().width / 390;
-      const wst = dx > 70, lmtg = dx > 200;
-      const i = Math.max(0, Math.min(n - 1, G.i0 + Math.round(dy / w / 52)));
-      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 8 : 10); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy2, wst: wst, lmtg: lmtg, dur: 200 }); }
-      wheelPos(G.i0, wst ? G.i0 : i);
+      // the list turns with the finger like a wheel; the middle slot is the choice. Over the Set start tag the choice locks to the current section.
+      const n = this.D.lmn.length, pr = P.getBoundingClientRect(), w = pr.width / 390, xd = (e.clientX - pr.left) / w;
+      const wst = xd > 214, lmtg = xd > 246;
+      let off = dy / w; const hi = G.ib * 52, lo = -(n - 1 - G.ib) * 52;
+      if (off > hi) off = hi + Math.min(26, (off - hi) * 0.3); if (off < lo) off = lo - Math.min(26, (lo - off) * 0.3);
+      const i = Math.max(0, Math.min(n - 1, G.ib - Math.round(off / 52)));
+      if (i !== G.i || wst !== G.wst || lmtg !== G.lmtg) { hap(i !== G.i ? 8 : 12); G.i = i; G.wst = wst; G.lmtg = lmtg; set({ lm: true, lmIdx: wst ? G.i0 : i, rlh: wst ? G.i0 : i, nowIdx: G.i0, wy: G.wy2, wst: wst, lmtg: lmtg, dur: 200 }); }
+      const wl = P.querySelector('.wk20 .whl'); if (wl) { wl.style.transition = wst ? '' : 'none'; wl.style.transform = 'translateY(' + (wst ? (2 - G.i0) * 52 : (2 - G.ib) * 52 + off).toFixed(1) + 'px)'; }
     }
     else if (G.kind === 'dth') { const t = Math.round(G.t0 + dx / 374 * 60); if (t !== G.lt) { G.lt = t; hap(3); } set({ t: t, ts: t, dur: 120, ease: 'lin' }); }
     else if (G.kind === 'adj') { const a = Object.assign({}, s.adj || {}); a[s.ap] = Math.max(-1, Math.min(1, +(G.a0 + dx / 175).toFixed(2))); const st = Math.round(a[s.ap] * 20); if (st !== G.lt) { G.lt = st; hap(3); } set({ adj: a, dur: 1 }); }
@@ -6072,10 +6070,13 @@ live() {
       set({ nav: i, pg: i, hs: i === (s.pg || 0) ? s.hs : 0, hs2: i === (s.pg || 0) ? s.hs2 : 0, dur: 380, ease: 'out' }); return;
     }
     if (g.kind === 'wheel') {
-      suppress = true; setTimeout(() => { const wl = P.querySelector('.wk20 .whl'); if (wl) wl.style.transition = ''; }, 400);
+      suppress = true; { const wl = P.querySelector('.wk20 .whl'); if (wl && !(g.i !== g.i0 && !g.wst && !g.lmtg)) { wl.style.transition = ''; wl.style.transform = ''; } }
       if (g.lmtg) { const t = s.t; undoPatch = { lmset2: false }; set({ lm: false, wst: false, lmtg: false, rlh: -1, lmset2: true, toast: '<b>' + this.D.lmn[g.i0] + '</b> start set to <b>' + fmtt(t) + '</b>', bk: 'lm', undo: true, dur: 420, ease: 'spr' }); }
       else if (g.wst) { set({ lm: false, wst: false, lmtg: false, rlh: -1, dur: 360, ease: 'out' }); }
-      else if (g.i !== g.i0) { const st = K.ST[g.i]; set({ lm: false, rlh: -1, t: st, ts: st, w0: st - 6, dur: 360, ease: 'out', toast: 'Jumped to <b>' + this.D.lmn[g.i] + '</b> · ' + fmtt(st), bk: 'ok' }); }
+      else if (g.i !== g.i0) { // settle on the choice, wait a beat (touch again to keep turning), then jump
+        const ji = g.i; const wl = P.querySelector('.wk20 .whl'); if (wl) { wl.style.transition = ''; wl.style.transform = 'translateY(' + ((2 - ji) * 52) + 'px)'; }
+        clearTimeout((this._wp || {}).tm);
+        this._wp = { i: ji, i0: g.i0, wy2: g.wy2, tm: setTimeout(() => { this._wp = null; hap(10); const st = K.ST[ji]; set({ lm: false, rlh: -1, t: st, ts: st, w0: st - 6, dur: 360, ease: 'out', toast: 'Jumped to <b>' + this.D.lmn[ji] + '</b> · ' + fmtt(st), bk: 'ok' }); }, 650) }; }
       else set({ lm: false, rlh: -1, dur: 300 });
       return;
     }
@@ -6339,7 +6340,10 @@ r18(S, PR) {
   // REAL frames (pass 4): every frame is an <img> already in the markup; we only switch which one is shown.
   // Near a working anchor the 8 playback frames cycle with time (play moves, a 1–2 frame scrub steps); elsewhere the landmark frame shows.
   { const AN = [15150, D.jt || 16692, 11412]; let li = 0; starts.forEach((s0, j) => { if (t >= s0) li = j; });
-    const keyFor = side => { for (let j = 0; j < AN.length; j++) if (Math.abs(t - AN[j]) <= 120) return 'p' + ((((Math.floor((t - AN[j]) / 0.5 + 1e-6) + j * 3 + (side === 'back' ? 4 : 0)) % 8) + 8) % 8 + 1); return 'l' + li; };
+    // every frame step (0.5 s) shows a different picture, anywhere on the timeline, so scrubbing and playing always visibly move
+    const hsh = n => { let x = Math.imul((n | 0) ^ 0x9E3779B9, 2654435761) >>> 0; x ^= x >>> 15; x = Math.imul(x, 2246822519) >>> 0; return (x ^ (x >>> 13)) >>> 0; };
+    const keyFor = side => { const pool = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'l' + li]; const st = Math.floor(t / 0.5 + 1e-6) + (side === 'back' ? 100003 : 0);
+      let k = hsh(st) % pool.length; const kp = hsh(st - 1) % pool.length; if (k === kp) k = (k + 1) % pool.length; return pool[k]; };
     this.qa('.fset').forEach(fs => { const k = keyFor(fs.dataset.side); fs.querySelectorAll('img').forEach(im => im.classList.toggle('on', im.dataset.k === k)); }); }
   // rail: sections, playhead, hold chip, pull
   this.qa('.rl18 .xsec').forEach(sg => { const i = +sg.dataset.i; const s0 = starts[i]; const e0 = i + 1 < starts.length ? starts[i + 1] : D.tot; sg.style.top = (s0 / D.tot * 100) + '%'; sg.style.height = ((e0 - s0) / D.tot * 100) + '%'; sg.classList.toggle('on', i === ri); sg.classList.toggle('hd', i === S.rlh); });
