@@ -3867,8 +3867,10 @@ button svg{flex-shrink:0}
 /* comment tools: drawings and measurements on the focused frame */
 .r20.r20 .stg12 .fr12 > .ann21{position:absolute;inset:0;pointer-events:none;z-index:3}
 .r20.r20 .ann21 svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.r20.r20 .ann21 .pn{fill:none;stroke:#FFD15F;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
-.r20.r20 .ann21 .ms{stroke:#FFFFFF;stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.r20.r20 .ann21 .pn{fill:none;stroke:#FFD15F;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.r20.r20 .ann21 .pnu{fill:none;stroke:rgba(0,0,0,.35);stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.r20.r20 .ann21 .ms{stroke:#FFFFFF;stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.r20.r20 .ann21 .msu{stroke:rgba(0,0,0,.4);stroke-width:5;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .r20.r20 .ann21 .mk{fill:#FFFFFF;stroke:#0D0D0D;stroke-width:1.2;vector-effect:non-scaling-stroke}
 .r20.r20 .ann21 .ml20{position:absolute;transform:translate(-50%,-150%);padding:3px 8px;border-radius:10px;background:rgba(13,13,13,.78);color:#FFFFFF;font:600 12px/16px 'IBM Plex Mono',monospace;white-space:nowrap}
 .r20.r20 .cmp18 .xga button.on{background:#FFFFFF!important;color:#6327DA!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important;border-radius:22px}
@@ -3885,6 +3887,41 @@ button svg{flex-shrink:0}
 .r20.r20:not([data-cmode="0"]) .cxb20{opacity:1;pointer-events:auto;transform:none}
 /* the rail starts lower, with clear room under the close button */
 .r20.r20 .rc17 .rl18{top:76px!important;height:auto!important;bottom:197px!important}
+/* report: the approval row asks for attention when Submit is pressed too early */
+.r20.r20 .rpg18 .ap18.xatt{animation:apatt 1.1s cubic-bezier(.3,.8,.3,1) 2}
+@keyframes apatt{0%{box-shadow:0 0 0 0 rgba(113,57,238,0)}20%{box-shadow:0 0 0 4px #7139EE;transform:translateX(-6px)}35%{transform:translateX(6px)}50%{transform:translateX(-3px)}65%{transform:none;box-shadow:0 0 0 4px #7139EE}100%{box-shadow:0 0 0 4px rgba(113,57,238,0)}}
+.r20.r20 .rpg18 .ap18.xatt .xcbx{box-shadow:0 0 0 3px #ECE9FE}
+/* report preview: a sample page */
+.pv21{position:absolute;inset:0;z-index:300;background:#1A1A1D;display:flex;flex-direction:column;opacity:0;transition:opacity .3s}
+.pv21.on{opacity:1}
+.pv21 .pvb{height:44px;margin:52px 12px 10px;display:flex;align-items:center;gap:10px;color:#FFFFFF;font-size:16px;font-weight:600}
+.pv21 .pvx{width:44px;height:44px;border-radius:22px;border:0;padding:0;background:rgba(255,255,255,.16);color:#FFFFFF;display:flex;align-items:center;justify-content:center}
+.pv21 .pvs{margin-left:auto;font-size:12px;font-weight:600;padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.16)}
+.pv21 .pvsc{flex:1;overflow-y:auto;padding:0 12px 24px;-webkit-overflow-scrolling:touch;transform:translateY(24px);transition:transform .42s cubic-bezier(.3,1.1,.4,1)}
+.pv21.on .pvsc{transform:none}
+.pv21,.pv21 *{touch-action:pan-y!important;-webkit-user-select:text;user-select:text}
+.pv21 .pvpg{background:#FFFFFF;color:#0D0D0D;border-radius:6px;padding:22px 20px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:12px;line-height:17px}
+.pv21 .pvh{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #0D0D0D}
+.pv21 .pvt{font-size:17px;line-height:22px;font-weight:700}
+.pv21 .pvm{color:#636363;font-size:12px}
+.pv21 .pvlogo{width:34px;height:34px;border-radius:9px;background:#7139EE;color:#FFFFFF;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.pv21 .pvtb{width:100%;border-collapse:collapse;margin:10px 0 4px}
+.pv21 .pvtb th{text-align:left;font-weight:500;color:#636363;width:38%;padding:4px 0;vertical-align:top}
+.pv21 .pvtb td{padding:4px 0;font-weight:600}
+.pv21 .pvsec{margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #E0E0E0;font-weight:700;font-size:13px}
+.pv21 .pvsec small{font-weight:600;color:#636363;margin-left:4px}
+.pv21 .pvfs{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.pv21 .pvfs span{display:flex;align-items:center;gap:6px}
+.pv21 .pvfs i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.pv21 .pvfs em{margin-left:auto;font-style:normal;font-family:'IBM Plex Mono',monospace;color:#636363}
+.pv21 .pvfd{display:flex;gap:10px;padding:6px 0}
+.pv21 .pvth{width:64px;height:64px;border-radius:6px;background:#0D0D0D center/cover no-repeat;flex-shrink:0}
+.pv21 .pvmt{color:#636363;font-family:'IBM Plex Mono',monospace;font-size:12px}
+.pv21 .pvmt b{font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0D0D0D}
+.pv21 .pvfd p,.pv21 .pvrm{margin:2px 0 0;font-size:13px;line-height:18px}
+.pv21 .pvsg{margin-top:18px;padding-top:10px;border-top:1px solid #E0E0E0}
+.pv21 .pvsig{font-family:'Segoe Script','Brush Script MT',cursive;font-size:20px;line-height:26px;color:#2A2A2A}
+.pv21 .pvft{margin-top:16px;color:#8A8A8A;font-size:12px;text-align:center}
 /* the app owns every touch: no browser zoom, long-press menu, selection or image drag */
 .ph12,.ph12 *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ph12 img{-webkit-user-drag:none;pointer-events:none}
@@ -5695,8 +5732,9 @@ live() {
   const mmOf = (a, b) => (Math.hypot(b[0] - a[0], b[1] - a[1]) / 100).toFixed(1); // the frame spans about 10 mm
   const renderAn = () => { ['f', 'b'].forEach(v => { const o = ovl(v); if (!o) return; const sv = o.querySelector('svg'); let h = ''; o.querySelectorAll('.ml20').forEach(x => x.remove());
     AN.shapes.filter(sh => sh.v === v).forEach(sh => {
-      if (sh.k === 'pen') { if (sh.p.length > 1) h += '<path class="pn" d="M' + sh.p.map(q => q[0].toFixed(0) + ' ' + q[1].toFixed(0)).join('L') + '"/>'; else h += '<path class="pn" d="M' + sh.p[0][0].toFixed(0) + ' ' + sh.p[0][1].toFixed(0) + 'l0.1 0"/>'; }
-      else { const [a, b] = sh.p; h += '<line class="ms" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"/><circle class="mk" cx="' + a[0] + '" cy="' + a[1] + '" r="9"/><circle class="mk" cx="' + b[0] + '" cy="' + b[1] + '" r="9"/>';
+      if (sh.k === 'pen') { const d = sh.p.length > 1 ? 'M' + sh.p.map(q => q[0].toFixed(0) + ' ' + q[1].toFixed(0)).join('L') + (sh.mm ? 'Z' : '') : 'M' + sh.p[0][0].toFixed(0) + ' ' + sh.p[0][1].toFixed(0) + 'l0.1 0'; h += '<path class="pnu" d="' + d + '"/><path class="pn" d="' + d + '"/>';
+        if (sh.mm) { const xs = sh.p.map(q => q[0]), ys = sh.p.map(q => q[1]); const lb = document.createElement('span'); lb.className = 'ml20'; lb.textContent = '≈ ' + sh.mm.toFixed(1) + ' mm'; lb.style.left = ((Math.min(...xs) + Math.max(...xs)) / 20) + '%'; lb.style.top = (Math.min(...ys) / 10) + '%'; o.appendChild(lb); } }
+      else { const [a, b] = sh.p; h += '<line class="msu" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"/><line class="ms" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"/><circle class="mk" cx="' + a[0] + '" cy="' + a[1] + '" r="9"/><circle class="mk" cx="' + b[0] + '" cy="' + b[1] + '" r="9"/>';
         if (Math.hypot(b[0] - a[0], b[1] - a[1]) > 20) { const lb = document.createElement('span'); lb.className = 'ml20'; lb.textContent = mmOf(a, b) + ' mm'; lb.style.left = ((a[0] + b[0]) / 20) + '%'; lb.style.top = ((a[1] + b[1]) / 20) + '%'; o.appendChild(lb); } }
     }); sv.innerHTML = h; }); };
   const toolUI = () => { const cm = P.querySelector('.cmp18'); if (!cm) return; [['xdr', 'pen'], ['xms', 'meas'], ['xer', 'erase']].forEach(([cl, t]) => { const b = cm.querySelector('.' + cl); if (b) b.classList.toggle('on', AN.tool === t); });
@@ -5751,6 +5789,45 @@ live() {
   P.addEventListener('wheel', e => { if (!e.ctrlKey || !inCase()) return; const v = viewAt(e.clientX, e.clientY); if (!v) return; e.preventDefault(); e.stopImmediatePropagation();
     const [lx, ly] = zLocal(v, e.clientX, e.clientY); const z = Math.max(1, Math.min(6, ZM[v].z * Math.exp(-e.deltaY / 120))); zAt(v, z, lx, ly, false); clearTimeout(this._zw); this._zw = setTimeout(zSync, 200); }, { passive: false, capture: true });
 
+  // ================= report: point at the approval tick when Submit is pressed too early
+  const needApproval = () => {
+    const ap = P.querySelector('.rpg18 .ap18'); if (!ap) return; hap(20);
+    const from = L().rs || 0, to = 1e5; const t0 = performance.now(); MC().clear();
+    const stepR = now => { const k = Math.min(1, (now - t0) / 420), e = 1 - Math.pow(1 - k, 3); const v = fastScroll('rs', from + (Math.min(to, maxOf(P.querySelector('.rpg18 .rsc'))) - from) * e); if (k < 1) requestAnimationFrame(stepR); else scrollDone(); };
+    requestAnimationFrame(stepR);
+    ap.classList.remove('xatt'); void ap.offsetWidth; ap.classList.add('xatt'); clearTimeout(this._apt); this._apt = setTimeout(() => ap.classList.remove('xatt'), 2200);
+    set({ toast: 'Tick the approval to submit', bk: 'ok', dur: 200 });
+  };
+
+  // ================= report preview: a sample of the finished report, as a page
+  const openPreview = () => {
+    const host = P; if (host.querySelector('.pv21')) return;
+    const rp = P.querySelector('.rpg18'); const txt = sel => { const e = rp.querySelector(sel); return e ? e.textContent.trim() : ''; };
+    const grid = [...rp.querySelectorAll('.ov18 .xgr p')].map(p => { const sm = p.querySelector('small'); const k = sm ? sm.textContent : ''; return [k, p.textContent.replace(k, '').trim()]; });
+    const seen = [...rp.querySelectorAll('.ov18 .xfs span')].map(sp => { const em = sp.querySelector('em'); const i = sp.querySelector('i'); return [sp.textContent.replace(em ? em.textContent : '', '').trim(), em ? em.textContent : '', i ? getComputedStyle(i).backgroundColor : '#818181']; });
+    const fds = [...rp.querySelectorAll('.rsc .fd18')].filter(f => !f.querySelector('.xcbx.xoff')).map(f => { const th = f.querySelector('.xth'); return { mt: (f.querySelector('.xmt') || {}).textContent || '', p: (f.querySelector('.xtx p') || {}).textContent || '', tg: (f.querySelector('.tg') || {}).textContent || '', bg: th ? getComputedStyle(th).backgroundImage.replace(/"/g, "'") : 'none' }; });
+    const who = txt('.sg18 .xw b') || 'Dr. Mohan Krishna S', rm = txt('.sg18 .xrm');
+    const d = new Date(); const today = d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()] + ' ' + d.getFullYear();
+    const esc2 = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const w = document.createElement('div'); w.className = 'pv21';
+    w.innerHTML = '<div class="pvb"><button class="pvx" aria-label="Close preview"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b>Report preview</b><span class="pvs">Sample</span></div>'
+      + '<div class="pvsc"><div class="pvpg">'
+      + '<div class="pvh"><div><div class="pvt">Capsule endoscopy report</div><div class="pvm">Small-bowel capsule · ' + esc2(today) + '</div></div><div class="pvlogo">CR</div></div>'
+      + '<table class="pvtb">' + grid.map(([k, v]) => '<tr><th>' + esc2(k) + '</th><td>' + esc2(v) + '</td></tr>').join('') + '</table>'
+      + '<div class="pvsec">Transit times</div><div class="pvfs">' + seen.map(([n, t, c]) => '<span><i style="background:' + c + '"></i>' + esc2(n) + '<em>' + esc2(t) + '</em></span>').join('') + '</div>'
+      + '<div class="pvsec">Findings <small>' + fds.length + '</small></div>'
+      + fds.map((f, i) => '<div class="pvfd"><span class="pvth" style="background-image:' + f.bg + '"></span><div><div class="pvmt">' + (i + 1) + ' · ' + esc2(f.mt) + (f.tg ? ' · <b>' + esc2(f.tg) + '</b>' : '') + '</div><p>' + esc2(f.p) + '</p></div></div>').join('')
+      + '<div class="pvsec">Conclusion</div><p class="pvrm">' + esc2(rm || 'Findings reviewed and reported.') + '</p>'
+      + '<div class="pvsg"><div class="pvsig">' + esc2(who) + '</div><div class="pvm">' + esc2(who) + ' · Lead physician · signed ' + esc2(today) + '</div></div>'
+      + '<div class="pvft">Generated with Capsule Reader · page 1 of 1</div>'
+      + '</div></div>';
+    host.appendChild(w); requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add('on')));
+    ['pointerdown', 'pointermove', 'pointerup', 'click', 'wheel'].forEach(t => w.addEventListener(t, ev => { ev.stopPropagation(); }, { passive: true }));
+    w.querySelector('.pvx').addEventListener('click', ev => { ev.stopPropagation(); closePreview(); });
+    hap(8);
+  };
+  const closePreview = () => { const w = P.querySelector('.pv21'); if (!w) return false; w.classList.remove('on'); setTimeout(() => w.remove(), 360); return true; };
+
   // ---------- back: closes whatever is on top (phone back gesture, or a swipe in from the left edge)
   const back = () => {
     const s = L();
@@ -5761,6 +5838,7 @@ live() {
       if (s.pg) { set({ nav: 0, pg: 0, hs: 0, hs2: 0, dur: 420, ease: 'out' }); return true; }
       return false;
     }
+    if (closePreview()) return true;
     if (s.rp) { set({ rp: 0, rs: 0, dur: 420, ease: 'out' }); return true; }
     if (s.ddo) { set({ ddo: false, dur: 300, ease: 'out' }); return true; }
     if (s.lp) { seq([[420, { lp: 0, dur: 420, ease: 'out' }], [380, { chrome: 0, dur: 380, ease: 'out' }], [10, { nh: 0, dur: 340, ease: 'out' }]]); return true; }
@@ -5835,8 +5913,10 @@ live() {
     }
     // ---------- case
     if (s.rp) {
+      if (c('.rpg18 .xpv')) { openPreview(); return; }
       if (c('.rpg18 .clp')) { set({ rp: 0, rs: 0, dur: 420, ease: 'out' }); return; }
       if (c('.rpg18 .ap18 .xcbx') || c('.rpg18 .ap18')) { set({ appr: !s.appr, dur: 200 }); return; }
+      if (c('.rpg18 .sub18') && !s.appr) { needApproval(); return; }
       if (c('.rpg18 .sub18')) { if (s.appr) seq([[2400, { toast: 'Report submitted · <b>' + this.whoName + '</b>', bk: 'ok', dur: 200 }], [10, { rp: 0, rs: 0, appr: false, dur: 420, ease: 'out' }]]); return; }
       return;
     }
@@ -5865,7 +5945,8 @@ live() {
       if (tl) { AN.tool = AN.tool === tl ? null : tl; hap(6); toolUI(); return; }
       if (c('.cmp18 .xun')) { if (AN.hi > 0) { AN.hi--; AN.shapes = JSON.parse(JSON.stringify(AN.hist[AN.hi])); renderAn(); toolUI(); hap(6); } return; }
       if (c('.cmp18 .xre')) { if (AN.hi < AN.hist.length - 1) { AN.hi++; AN.shapes = JSON.parse(JSON.stringify(AN.hist[AN.hi])); renderAn(); toolUI(); hap(6); } return; }
-      if (c('.cmp18 .chp18c .xc') && TA) { const x = c('.cmp18 .chp18c .xc'); const nm = ((x.childNodes[1] || {}).textContent || x.textContent || '').trim(); if (/More/.test(nm)) return; TA.value = (TA.value.trim() ? TA.value.trim() + ' · ' : '') + nm; taSync(); hap(6); return; }
+      if (c('.cmp18 .chp18c .xc') && TA) { const x = c('.cmp18 .chp18c .xc'); const nm = ((x.childNodes[1] || {}).textContent || x.textContent || '').trim(); if (/More/.test(nm)) return; const lastSz = [...AN.shapes].reverse().find(x => x.mm || x.k === 'ms'); const sz = lastSz ? (lastSz.mm ? lastSz.mm : Math.hypot(lastSz.p[1][0] - lastSz.p[0][0], lastSz.p[1][1] - lastSz.p[0][1]) / 100) : 0;
+        TA.value = (TA.value.trim() ? TA.value.trim() + ' · ' : '') + nm + (sz ? ', about ' + sz.toFixed(1) + ' mm' : ''); taSync(); hap(6); return; }
       if (c('.ppl12 .p') && TA) { const nm = c('.ppl12 .p').querySelector('b').textContent; TA.value = TA.value.replace(/@[^@]*$/, '') + '@' + nm + ' '; set({ picker: false, dur: 200 }); taSync(); TA.focus(); return; }
       if (c('.cmp18 .rb12')) { if (TA && TA.value.trim()) sendComment(); else if (TA) TA.focus(); return; }
       if (c('.cmp18 .chp18c .xc')) { const nm = (c('.cmp18 .chp18c .xc').childNodes[1] || {}).textContent || 'Polyp'; set({ txt: /Polyp/.test(nm) ? K.TOK : ('A finding of ' + nm.toLowerCase() + ' on this frame.'), dur: 200 }); return; }
@@ -5963,7 +6044,7 @@ live() {
     if (v && (s.bm === '0' || s.bm == null || s.bm === 0)) {
       G.kind = 'frame'; G.v = v;
       G.tm = setTimeout(() => { G.kind = 'hold'; hap(14); stopPlay(); set({ held: v, hold: holdPt(v), dur: 200 }); G.tm2 = setTimeout(() => { if (G && G.kind === 'hold') set({ rad: true, dur: 300 }); }, 240); }, HOLD);
-    } else if (c('.stg12')) { G.kind = 'swipe'; }
+    } else if (c('.stg12') && (s.bm === '0' || s.bm == null || s.bm === 0)) { G.kind = 'swipe'; }
   });
   const railY0 = () => { const r = P.querySelector('.rc17 .rl18') || P.querySelector('.rc17'); return r.getBoundingClientRect(); };
   const railOpen = (y) => {
@@ -5997,7 +6078,7 @@ live() {
       return; }
     if (G.kind === 'pan') { const k = kOf(G.v); const Z = ZM[G.v]; Z.x = G.Z0.x + dx / k; Z.y = G.Z0.y + dy / k; zClamp(G.v); zApply(G.v, false); if (G.moved) suppress = true; return; }
     if (G.kind === 'rail' && G.moved && Math.abs(dy) >= Math.abs(dx)) { clearTimeout(G.tm); const y0 = G.y; G.y = e.clientY; G.x = e.clientX; railOpen(y0); }
-    if ((G.kind === 'frame' || G.kind === 'rail' || G.kind === 'dt') && G.moved) { clearTimeout(G.tm); if (G.kind === 'frame') G.kind = 'swipe'; else if (G.kind === 'dt') G.kind = null; else G.kind = null; }
+    if ((G.kind === 'frame' || G.kind === 'rail' || G.kind === 'dt') && G.moved) { clearTimeout(G.tm); if (G.kind === 'frame') G.kind = (s.bm === '0' || s.bm == null || s.bm === 0) ? 'swipe' : null; else if (G.kind === 'dt') G.kind = null; else G.kind = null; }
     window._gk = G.kind;
     if (G.kind === 'pswipe') {
       if (!G.axis && Math.abs(dx) + Math.abs(dy) > 10) G.axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? 'x' : 'y';
@@ -6051,6 +6132,8 @@ live() {
     if (g.kind === 'pan') { if (g.moved) suppress = true; if (ZM[g.v].z < 1.05) { ZM[g.v] = { z: 1, x: 0, y: 0 }; zApply(g.v, true); } else zClamp(g.v), zApply(g.v, true); setTimeout(zSync, 360); return; }
     if (g.kind === 'draw') { suppress = true;
       if (g.sh && g.sh.k === 'ms' && Math.hypot(g.sh.p[1][0] - g.sh.p[0][0], g.sh.p[1][1] - g.sh.p[0][1]) < 20) { AN.shapes = AN.shapes.filter(x => x !== g.sh); renderAn(); return; }
+      if (g.sh && g.sh.k === 'pen' && g.sh.p.length > 8) { const pts = g.sh.p, xs = pts.map(q => q[0]), ys = pts.map(q => q[1]); const w = Math.max(...xs) - Math.min(...xs), hgt = Math.max(...ys) - Math.min(...ys); const gap = Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]);
+        if (Math.max(w, hgt) > 30 && gap < Math.max(w, hgt) * 0.4) { g.sh.mm = Math.max(w, hgt) / 100; hap(10); } } // a closed loop: show its rough size (the frame spans about 10 mm)
       if (g.sh || g.er) { commit(); if (g.sh && g.sh.k === 'ms') hap(10); } renderAn(); return; }
     if (g.kind === 'pswipe') {
       { const rp = P.querySelector('.rp18'); if (rp) rp.classList.remove('xdr'); }
@@ -6383,7 +6466,7 @@ r18(S, PR) {
   // R20: current chunk on the rail (same minute as the detail timeline)
   { const w0c = S.w0 != null ? S.w0 : D.w0; this.qa('.ck20').forEach(c => { c.style.top = (w0c / D.tot * 100).toFixed(3) + '%'; c.style.height = 'max(14px,' + (60 / D.tot * 100).toFixed(3) + '%)'; }); }
   // R20: adjustments active?
-  { const A = S.adj || {}; const on = Object.keys(A).some(k => Math.abs(A[k] || 0) > 0.001) || (S.fice || 0) > 0; P.dataset.adjon = on ? '1' : '0'; ['c','b','s','sh','g'].forEach(k => { P.dataset['m' + k] = Math.abs(A[k] || 0) > 0.001 ? '1' : '0'; }); P.dataset.mf = (S.fice || 0) > 0 ? '1' : '0'; this.qa('.sub18').forEach(b => { b.disabled = !S.appr; }); this.qa('.rs20').forEach(b => { b.disabled = !on; b.setAttribute('aria-disabled', on ? 'false' : 'true'); }); }
+  { const A = S.adj || {}; const on = Object.keys(A).some(k => Math.abs(A[k] || 0) > 0.001) || (S.fice || 0) > 0; P.dataset.adjon = on ? '1' : '0'; ['c','b','s','sh','g'].forEach(k => { P.dataset['m' + k] = Math.abs(A[k] || 0) > 0.001 ? '1' : '0'; }); P.dataset.mf = (S.fice || 0) > 0 ? '1' : '0'; this.qa('.sub18').forEach(b => { b.disabled = false; b.setAttribute('aria-disabled', S.appr ? 'false' : 'true'); }); this.qa('.rs20').forEach(b => { b.disabled = !on; b.setAttribute('aria-disabled', on ? 'false' : 'true'); }); }
   this.qa('.h20 .lv19.np > div').forEach(d => { d.style.transform = 'translateY(' + (-(S.hs2 || 0)) + 'px)'; });
 
   // R20 entrance: the source (thumbnail, card, sheet, notification) morphs into the viewer
