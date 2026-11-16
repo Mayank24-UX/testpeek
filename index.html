@@ -3895,7 +3895,8 @@ button svg{flex-shrink:0}
 .pv21{position:absolute;inset:0;z-index:300;background:#1A1A1D;display:flex;flex-direction:column;opacity:0;transition:opacity .3s}
 .pv21.on{opacity:1}
 .pv21 .pvb{height:44px;margin:52px 12px 10px;display:flex;align-items:center;gap:10px;color:#FFFFFF;font-size:16px;font-weight:600}
-.pv21 .pvx{width:44px;height:44px;border-radius:22px;border:0;padding:0;background:rgba(255,255,255,.16);color:#FFFFFF;display:flex;align-items:center;justify-content:center}
+.pv21 .pvx{position:absolute;right:16px;top:52px;width:44px;height:44px;border-radius:22px;border:0;padding:0;background:rgba(255,255,255,.16);color:#FFFFFF;display:flex;align-items:center;justify-content:center;z-index:2}
+.pv21 .pvb b{margin-left:4px}
 .pv21 .pvs{margin-left:auto;font-size:12px;font-weight:600;padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.16)}
 .pv21 .pvsc{flex:1;overflow-y:auto;padding:0 12px 24px;-webkit-overflow-scrolling:touch;transform:translateY(24px);transition:transform .42s cubic-bezier(.3,1.1,.4,1)}
 .pv21.on .pvsc{transform:none}
@@ -5810,7 +5811,7 @@ live() {
     const d = new Date(); const today = d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()] + ' ' + d.getFullYear();
     const esc2 = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     const w = document.createElement('div'); w.className = 'pv21';
-    w.innerHTML = '<div class="pvb"><button class="pvx" aria-label="Close preview"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b>Report preview</b><span class="pvs">Sample</span></div>'
+    w.innerHTML = '<div class="pvb"><button class="pvx" aria-label="Close preview"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><b>Report preview</b></div>'
       + '<div class="pvsc"><div class="pvpg">'
       + '<div class="pvh"><div><div class="pvt">Capsule endoscopy report</div><div class="pvm">Small-bowel capsule · ' + esc2(today) + '</div></div><div class="pvlogo">CR</div></div>'
       + '<table class="pvtb">' + grid.map(([k, v]) => '<tr><th>' + esc2(k) + '</th><td>' + esc2(v) + '</td></tr>').join('') + '</table>'
@@ -5821,7 +5822,11 @@ live() {
       + '<div class="pvsg"><div class="pvsig">' + esc2(who) + '</div><div class="pvm">' + esc2(who) + ' · Lead physician · signed ' + esc2(today) + '</div></div>'
       + '<div class="pvft">Generated with Capsule Reader · page 1 of 1</div>'
       + '</div></div>';
-    host.appendChild(w); requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add('on')));
+    host.appendChild(w);
+    { // the close button sits exactly where the Preview button was
+      const pb = rp.querySelector('.xpv'), pr = P.getBoundingClientRect(), k = pr.width / 390, x = w.querySelector('.pvx');
+      if (pb && x) { const r = pb.getBoundingClientRect(); const cx = (r.left + r.width / 2 - pr.left) / k, cy = (r.top + r.height / 2 - pr.top) / k; x.style.left = (cx - 22) + 'px'; x.style.top = (cy - 22) + 'px'; } }
+    requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add('on')));
     ['pointerdown', 'pointermove', 'pointerup', 'click', 'wheel'].forEach(t => w.addEventListener(t, ev => { ev.stopPropagation(); }, { passive: true }));
     w.querySelector('.pvx').addEventListener('click', ev => { ev.stopPropagation(); closePreview(); });
     hap(8);
