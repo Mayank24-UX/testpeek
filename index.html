@@ -6524,7 +6524,9 @@ html,body{background:#FFFFFF;overflow:hidden;overscroll-behavior:none}
 // Fit the 390 × 844 design to any screen. The mock status bar (top 47 px) is dropped, so the app needs 797 px of height.
 // It scales to whichever runs out first, width or height, and re-fits when the browser bar shows or hides.
 (function () {
-  var TOP = 30, H = 844 - TOP; // keep a little air above the top bar
+  var SA = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+  // installed app: a little air above the top bar. In a browser tab the browser's own bars already frame it, so trim the empty bands and use the room for a bigger app.
+  var TOP = SA ? 30 : 47, H = 844 - TOP - (SA ? 0 : 14);
   function fit() {
     var ae = document.activeElement; if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && fit.done) return; // the keyboard is up: keep the layout still
     fit.done = 1;
