@@ -500,6 +500,12 @@ class Component extends DCLogic {
     document.addEventListener('keydown', this.kd);
     this.pd = () => { const a = document.activeElement; if (!a || a === document.body) this.focusRoot(); };
     document.addEventListener('pointerdown', this.pd);
+    this.pz = (e) => { if (!e.ctrlKey) return; const t = e.target && e.target.closest && e.target.closest('.tile'); if (!t) return; e.preventDefault(); this.pinchZoomTo(this.state.zoom * Math.exp(-e.deltaY / 110)); };
+    document.addEventListener('wheel', this.pz, { passive: false });
+    this.gs = (e) => { if (e.target && e.target.closest && e.target.closest('.tile')) { e.preventDefault(); this._gz = this.state.zoom; } };
+    this.gc = (e) => { if (this._gz == null) return; e.preventDefault(); this.pinchZoomTo(this._gz * e.scale); };
+    this.ge = () => { this._gz = null; };
+    document.addEventListener('gesturestart', this.gs); document.addEventListener('gesturechange', this.gc); document.addEventListener('gestureend', this.ge);
     this.rs = () => { const el = this.root; if (!el) return; const r = el.getBoundingClientRect(); const w = Math.round(r.width), h = Math.round(r.height); if (w && h && (w !== this.state.vw || h !== this.state.vh)) this.setState({ vw: w, vh: h }); };
     window.addEventListener('resize', this.rs); try { this.ro = new ResizeObserver(this.rs); this.root && this.ro.observe(this.root); } catch (e) {}
     setTimeout(this.rs, 0);
@@ -659,9 +665,13 @@ class Component extends DCLogic {
   // ---------- review actions
   seek(t) { this.setState({ t: Math.max(0, Math.min(DUR, t)) }); }
   togglePlay() { this.setState(s => ({ playing: !s.playing && s.t < DUR, t: s.t >= DUR ? 0 : s.t, mode: s.mode === 'pin' || s.mode === 'fice' ? s.mode : s.mode })); }
-  zoomBy(d) { this.setState(s => { const z = Math.max(1, Math.min(2.5, +(s.zoom + d * 0.25).toFixed(2))); const lim = (z - 1) * 50; const p = s.pan || { x: 0, y: 0 };
+  zoomBy(d) { this.setState(s => { const z = Math.max(1, Math.min(4, +(s.zoom + d * 0.25).toFixed(2))); const lim = (z - 1) * 50; const p = s.pan || { x: 0, y: 0 };
     if (z > 1 && s.zoom <= 1 && !this.panHinted) { this.panHinted = true; this.later(() => this.toast('Drag the frame to move around'), 0); }
     return { zoom: z, pan: { x: Math.max(-lim, Math.min(lim, p.x)), y: Math.max(-lim, Math.min(lim, p.y)) } }; }); }
+  pinchZoomTo(z0) { this.setState(s => { const z = Math.max(1, Math.min(4, +z0.toFixed(3))); const lim = (z - 1) * 50; const p = s.pan || { x: 0, y: 0 };
+      if (z > 1 && s.zoom <= 1 && !this.panHinted) { this.panHinted = true; this.later(() => this.toast('Drag the frame to move around'), 0); }
+      const out = { zoom: z, pan: z <= 1 ? { x: 0, y: 0 } : { x: Math.max(-lim, Math.min(lim, p.x)), y: Math.max(-lim, Math.min(lim, p.y)) } };
+      if (s.playing && z > s.zoom) out.playing = false; return out; }); }
   toggleLm() { this.setState(s => ({ lmOpen: !s.lmOpen, menu: null })); }
   assignLm(i) {
     const s = this.state; const t = Math.round(s.t);

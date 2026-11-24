@@ -5786,6 +5786,8 @@ live() {
   const zReset = anim => { ['f', 'b'].forEach(v => { ZM[v] = { z: 1, x: 0, y: 0 }; zApply(v, anim); }); };
   this._zReset = zReset;
   const ptrs = new Map();
+  // iPhone Safari: stop the browser's own page pinch-zoom so two fingers zoom the frame instead
+  if (!window._crGs) { window._crGs = 1; ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false })); }
   // trackpad pinch on a computer (ctrl + wheel) zooms a frame too
   P.addEventListener('wheel', e => { if (!e.ctrlKey || !inCase()) return; const v = viewAt(e.clientX, e.clientY); if (!v) return; e.preventDefault(); e.stopImmediatePropagation();
     const [lx, ly] = zLocal(v, e.clientX, e.clientY); const z = Math.max(1, Math.min(6, ZM[v].z * Math.exp(-e.deltaY / 120))); zAt(v, z, lx, ly, false); clearTimeout(this._zw); this._zw = setTimeout(zSync, 200); }, { passive: false, capture: true });
