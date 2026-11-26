@@ -506,6 +506,107 @@ class Component extends DCLogic {
     this.gc = (e) => { if (this._gz == null) return; e.preventDefault(); this.pinchZoomTo(this._gz * e.scale); };
     this.ge = () => { this._gz = null; };
     document.addEventListener('gesturestart', this.gs); document.addEventListener('gesturechange', this.gc); document.addEventListener('gestureend', this.ge);
+    // ---- custom cursor: a dot plus a spring-following ring that reacts to what it is over
+    if (!window._ccur && window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) { window._ccur = 1; (() => {
+      const W = document.createElement('div'); W.className = 'ccw'; W.setAttribute('aria-hidden', 'true');
+      W.innerHTML = '<div class="ccr"><i class="cci"></i></div><div class="ccd"></div>';
+      const ST = document.createElement('style'); ST.textContent = `
+html.cc-on:not(.cc-native) .app,html.cc-on:not(.cc-native) .app *{cursor:none!important}
+.ccw{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:2147483647;opacity:0;transition:opacity .16s ease;--ink:#1A1A1D;--ring:rgba(26,26,29,.32);--fill:rgba(26,26,29,.07)}
+.ccw[data-vis="1"]{opacity:1}
+.ccw[data-m="native"]{opacity:0!important}
+.ccw[data-on="dark"]{--ink:#F4F4F6;--ring:rgba(244,244,246,.38);--fill:rgba(244,244,246,.10)}
+.ccw[data-on="img"]{--ink:#FFFFFF;--ring:rgba(255,255,255,.75);--fill:rgba(255,255,255,.16)}
+.ccr,.ccd{position:absolute;left:0;top:0;will-change:transform}
+.ccr::before{content:"";position:absolute;width:30px;height:30px;left:-15px;top:-15px;border-radius:50%;box-sizing:border-box;border:1.5px solid var(--ring);background:transparent;
+  transition:width .38s cubic-bezier(.34,1.56,.64,1),height .38s cubic-bezier(.34,1.56,.64,1),left .38s cubic-bezier(.34,1.56,.64,1),top .38s cubic-bezier(.34,1.56,.64,1),background-color .2s ease,border-color .2s ease,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ccw[data-on="img"] .ccr::before{box-shadow:0 0 0 .5px rgba(0,0,0,.25),0 1px 6px rgba(0,0,0,.25)}
+.ccd::before{content:"";position:absolute;width:6px;height:6px;left:-3px;top:-3px;border-radius:50%;background:var(--ink);transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .15s}
+.ccw[data-on="img"] .ccd::before{box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.cci{position:absolute;width:16px;height:16px;left:-8px;top:-8px;background:var(--ink);opacity:0;transform:scale(.5);transition:opacity .18s,transform .32s cubic-bezier(.34,1.56,.64,1);-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+/* over something clickable: the ring grows into a soft halo */
+.ccw[data-m="hov"] .ccr::before{width:44px;height:44px;left:-22px;top:-22px;background-color:var(--fill);border-color:transparent}
+.ccw[data-m="hov"] .ccd::before{transform:scale(.7)}
+/* over a zoomed frame: move arrows; while dragging the ring tightens */
+.ccw[data-m="grab"] .ccr::before{width:40px;height:40px;left:-20px;top:-20px}
+.ccw[data-m="grabbing"] .ccr::before{width:30px;height:30px;left:-15px;top:-15px;background-color:var(--fill)}
+.ccw[data-m="grab"] .cci,.ccw[data-m="grabbing"] .cci{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3'/%3E%3C/svg%3E");opacity:1;transform:scale(1)}
+.ccw[data-m="grabbing"] .cci{transform:scale(.8)}
+.ccw[data-m="grab"] .ccd::before,.ccw[data-m="grabbing"] .ccd::before,.ccw[data-m="zin"] .ccd::before{opacity:0}
+.ccw[data-m="zin"] .ccr::before{width:38px;height:38px;left:-19px;top:-19px;background-color:var(--fill)}
+.ccw[data-m="zin"] .cci{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 6v12M6 12h12'/%3E%3C/svg%3E");opacity:1;transform:scale(.85)}
+.ccw[data-m="no"] .ccr::before{border-color:var(--ring);opacity:.6}
+.ccw[data-m="no"] .ccd::before{opacity:.35}
+.ccw[data-m="busy"] .ccr::before{border-style:dashed;animation:ccspin 1s linear infinite}
+@keyframes ccspin{to{transform:rotate(360deg)}}
+/* press */
+.ccw[data-dn="1"] .ccr::before{transform:scale(.82)}
+.ccw[data-dn="1"] .ccd::before{transform:scale(.8)}
+`; document.head.appendChild(ST);
+      document.body.appendChild(W); const H = document.documentElement.classList; const R = W.firstChild, D = W.lastChild;
+      let mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0, raf = 0, app = null, tgt = null, lastProbe = 0, on = false, mode = '';
+      const NATIVE = /^(text|vertical-text|crosshair|.*resize|url)/;
+      // what cursor the page asked for here; read from the element and its parents, so nothing has to be re-styled to find out
+      const TXT = /^(text|search|email|url|tel|password|number|)$/;
+      const probe = () => {
+        for (let el = tgt, n = 0; el && el.nodeType === 1 && n < 25; el = el.parentElement, n++) {
+          const c = el.style && el.style.cursor; if (c && c !== 'none' && c !== 'auto' && c !== 'inherit') return c;
+          const tn = el.tagName;
+          if (tn === 'TEXTAREA' || (tn === 'INPUT' && TXT.test((el.getAttribute('type') || '').toLowerCase())) || el.isContentEditable) return 'text';
+          if (tn === 'INPUT' || tn === 'SELECT' || tn === 'BUTTON' || (tn === 'A' && el.hasAttribute('href'))) return el.disabled ? 'not-allowed' : 'pointer';
+          if (el.classList.contains('mhead')) return 'pointer';
+          if (el.classList.contains('bar') || el.classList.contains('app')) return 'default';
+        }
+        return 'default';
+      };
+      const setMode = (c) => {
+        const tile = !!(tgt && tgt.closest && tgt.closest('.tile, .fr, img, video, canvas'));
+        let m = c === 'pointer' ? 'hov' : c === 'grab' ? 'grab' : c === 'grabbing' ? 'grabbing' : c === 'zoom-in' ? 'zin' : c === 'not-allowed' ? 'no' : c === 'progress' || c === 'wait' ? 'busy' : NATIVE.test(c) ? 'native' : 'base';
+        // read what is under the pointer so the cursor stays visible: dark ink on light surfaces, white on dark ones and on images
+        let bg = tile ? 'img' : null;
+        for (let el = tgt, n = 0; !bg && el && el.nodeType === 1 && n < 12; el = el.parentElement, n++) {
+          const cs = getComputedStyle(el);
+          if (cs.backgroundImage && cs.backgroundImage.indexOf('url(') >= 0) { bg = 'img'; break; }
+          const mm = cs.backgroundColor.match(/[\d.]+/g); if (!mm) continue; const a = mm.length > 3 ? +mm[3] : 1; if (a < 0.5) continue;
+          const L = (0.2126 * mm[0] + 0.7152 * mm[1] + 0.0722 * mm[2]) / 255; bg = L < 0.5 ? 'dark' : 'light';
+        }
+        if (!bg) bg = app && app.classList.contains('dark') ? 'dark' : 'light';
+        W.dataset.m = m; W.dataset.on = bg;
+        if (H.contains('cc-native') !== (m === 'native')) H.toggle('cc-native', m === 'native');
+        mode = m;
+      };
+      const loop = () => {
+        // a soft spring: the ring trails the pointer a touch and settles without wobble
+        const k = 0.28, d = 0.62; vx = (vx + (mx - rx) * k) * d; vy = (vy + (my - ry) * k) * d; rx += vx; ry += vy;
+        R.style.transform = 'translate3d(' + rx.toFixed(1) + 'px,' + ry.toFixed(1) + 'px,0)';
+        D.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)';
+        if (Math.abs(mx - rx) + Math.abs(my - ry) + Math.abs(vx) + Math.abs(vy) > 0.15) raf = requestAnimationFrame(loop); else { rx = mx; ry = my; R.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)'; raf = 0; }
+      };
+      const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+      const leave = () => { H.remove('cc-on', 'cc-native'); app = null; on = false; W.dataset.vis = '0'; };
+      const over = (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') { leave(); return; }
+        const a = e.target && e.target.closest ? e.target.closest('.app') : null;
+        if (a !== app) { app = a; H.toggle('cc-on', !!app); if (!app) H.remove('cc-native'); }
+        if (!app) { if (on) { on = false; W.dataset.vis = '0'; } return; }
+        tgt = e.target; setMode(probe()); lastProbe = performance.now();
+      };
+      document.addEventListener('pointerover', over, true);
+      document.addEventListener('pointermove', (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        mx = e.clientX; my = e.clientY;
+        if (!app) return;
+        if (!on) { on = true; rx = mx; ry = my; vx = vy = 0; W.dataset.vis = '1'; }
+        // cursors change under a still target (zoom in → grab), so look again now and then
+        const t = performance.now(); if (t - lastProbe > 220) { lastProbe = t; setMode(probe()); }
+        kick();
+      }, true);
+      document.addEventListener('pointerdown', (e) => { if (!app) return; W.dataset.dn = '1'; requestAnimationFrame(() => setMode(probe())); }, true);
+      document.addEventListener('pointerup', () => { W.dataset.dn = '0'; if (app) requestAnimationFrame(() => setMode(probe())); }, true);
+      document.documentElement.addEventListener('pointerleave', leave);
+      window.addEventListener('blur', leave);
+    })(); }
+
     this.rs = () => { const el = this.root; if (!el) return; const r = el.getBoundingClientRect(); const w = Math.round(r.width), h = Math.round(r.height); if (w && h && (w !== this.state.vw || h !== this.state.vh)) this.setState({ vw: w, vh: h }); };
     window.addEventListener('resize', this.rs); try { this.ro = new ResizeObserver(this.rs); this.root && this.ro.observe(this.root); } catch (e) {}
     setTimeout(this.rs, 0);
