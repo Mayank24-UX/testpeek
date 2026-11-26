@@ -5773,7 +5773,7 @@ live() {
   { const host = P.querySelector('.case12'); if (host && !host.querySelector('.cxb20')) { const b = document.createElement('button'); b.className = 'cxb20 tap18'; b.setAttribute('aria-label', 'Back');
       b.innerHTML = '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>'; host.appendChild(b); } }
 
-  // ================= zoom: double-tap, pinch, and drag to pan
+  // ================= zoom: two-finger pinch, and drag to pan
   const ZM = this._zm || (this._zm = { f: { z: 1, x: 0, y: 0 }, b: { z: 1, x: 0, y: 0 } });
   const zEl = v => { const f = frameEl(v); return f && f.querySelector(':scope > i'); };
   const kOf = v => { const f = frameEl(v); return f ? f.getBoundingClientRect().width / (f.offsetWidth || 1) : 1; };
@@ -5996,9 +5996,6 @@ live() {
       if (s.bm === 'pen' && s.radsel === 'pin') { set({ held: v, hold: holdPt(v), dur: 200 }); setTimeout(() => pinView(v), 300); return; }
       if (s.bm === 'pen' && s.radsel === 'com') { openComposer(v, 'comment'); return; }
       if (s.bm === 'pick') { set({ held: v, hold: holdPt(v), dur: 200 }); setTimeout(() => openComposer(v, 'mention'), 250); return; }
-      const now = Date.now();
-      if (lastTap.v === v && now - lastTap.t < 320) { hap(8); if (ZM[v].z > 1.01) { ZM[v] = { z: 1, x: 0, y: 0 }; zApply(v, true); } else { const [lx, ly] = zLocal(v, e.clientX, e.clientY); zAt(v, 2.5, lx, ly, true); } setTimeout(zSync, 360); lastTap = { t: 0, v: null }; return; }
-      lastTap = { t: now, v: v };
     }
   });
 
